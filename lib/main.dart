@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
+import 'views/home_page.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(MathKidsApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MathKidsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Math Kids',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
