@@ -7,8 +7,10 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  flutter_dotenv: ^6.0.0
   flutter:
     sdk: flutter
+  flutter_stripe: ^12.0.2
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +19,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env

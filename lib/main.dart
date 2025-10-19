@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'views/home_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
+
+  final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
+  if (publishableKey != null && publishableKey.isNotEmpty) {
+    Stripe.publishableKey = publishableKey;
+    await Stripe.instance.applySettings();
+  } else {
+    debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env');
+  }
+
   runApp(MathKidsApp());
 }
 
