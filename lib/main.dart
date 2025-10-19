@@ -5,7 +5,22 @@ import 'views/home_page.dart';
 import 'views/go_to_sleep.dart';
 import 'models/account_manager.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+  await dotenv.load();
+} catch (e) {
+  debugPrint("Could not load .env file: $e");
+}
+
+  final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
+  if (publishableKey != null && publishableKey.isNotEmpty) {
+    Stripe.publishableKey = publishableKey;
+    await Stripe.instance.applySettings();
+  } else {
+    debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env');
+  }
+
   final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
 
   accountManager.purchaseTokens(50);
