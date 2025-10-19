@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/payment_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html;
 
 class TokenPurchasePage extends StatefulWidget {
   const TokenPurchasePage({super.key});
@@ -14,6 +14,35 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
   int _tokensToBuy = 1;
   bool _isLoading = false;
   String? _errorMessage;
+  final _payment = createPaymentService();
+
+  @override
+  void initState() {
+    super.initState();
+    // Handle Stripe Checkout return on web: look for success params
+    if (kIsWeb) {
+      final uri = Uri.parse(html.window.location.href);
+      final success = uri.queryParameters['success'];
+      final tokensStr = uri.queryParameters['tokens'];
+      if (success == '1' && tokensStr != null) {
+        final tokens = int.tryParse(tokensStr);
+        if (tokens != null && tokens > 0) {
+          // Inform caller and clean up URL to avoid duplicate handling on refresh
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pop(tokens);
+            _removeQueryParams();
+          });
+        }
+      }
+    }
+  }
+
+  void _removeQueryParams() {
+    if (!kIsWeb) return;
+    final uri = Uri.parse(html.window.location.href);
+    final cleared = uri.replace(queryParameters: {});
+    html.window.history.replaceState(null, '', cleared.toString());
+  }
 
   Future<void> _handlePayment() async {
     setState(() {
@@ -22,54 +51,17 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
     });
 
     try {
-      // 1. Create PaymentIntent on backend
-      final url = Uri.parse('http://10.0.83.32:8080/create-payment-intent');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'amount': _tokensToBuy * 100}), // in cents
-      );
+      await _payment.pay(tokenCount: _tokensToBuy);
 
-      if (response.statusCode != 200) {
-        setState(() {
-          _errorMessage = 'Failed to create payment intent: ${response.body}';
-          _isLoading = false;
-        });
-        return;
-      }
+      // On web, Stripe.js will redirect the page – don't show success here.
+  if (kIsWeb) return;
 
-      final data = jsonDecode(response.body);
-      final clientSecret = data['clientSecret'];
-      if (clientSecret == null) {
-        setState(() {
-          _errorMessage = 'Payment intent client secret missing in response.';
-          _isLoading = false;
-        });
-        return;
-      }
-
-      // 2. Initialize payment sheet with Stripe
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: 'Math Kids',
-        ),
-      );
-
-      // 3. Present payment sheet to user
-      await Stripe.instance.presentPaymentSheet();
-
-      // 4. Payment successful!
+      // Mobile: Payment successful!
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment successful! You bought $_tokensToBuy tokens.')),
       );
-
-      Navigator.of(context).pop(_tokensToBuy); // Return tokens bought to previous screen
-    } on StripeException catch (e) {
-      setState(() {
-        _errorMessage = 'Payment cancelled or failed: ${e.error.localizedMessage}';
-      });
+      Navigator.of(context).pop(_tokensToBuy);
     } catch (e) {
       setState(() {
         _errorMessage = 'An error occurred: $e';

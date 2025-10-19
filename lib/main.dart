@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'views/home_page.dart';
 import 'views/go_to_sleep.dart';
@@ -14,11 +15,18 @@ Future<void> main() async {
 }
 
   final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
-  if (publishableKey != null && publishableKey.isNotEmpty) {
-    Stripe.publishableKey = publishableKey;
-    await Stripe.instance.applySettings();
+  if (!kIsWeb) {
+    if (publishableKey != null && publishableKey.isNotEmpty) {
+      Stripe.publishableKey = publishableKey;
+      await Stripe.instance.applySettings();
+    } else {
+      debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env');
+    }
   } else {
-    debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env');
+    // On web, we use Stripe.js directly (initialized lazily in the web payment service)
+    if (publishableKey == null || publishableKey.isEmpty) {
+      debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env (web)');
+    }
   }
 
   final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
