@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../services/payment_service.dart';
+import '../services/token_manager.dart';
+import 'package:intl/intl.dart';
 
 class ParentalControlsPage extends StatefulWidget {
   @override
@@ -10,12 +13,27 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
   final Color accentTone = const Color(0xFF90CAF9);  // Soft blue accent
   bool _authenticated = false;
   final TextEditingController _passwordController = TextEditingController();
+  final TokenManager _tokenManager = TokenManager();
 
   @override
   void initState() {
     super.initState();
+    _tokenManager.initialize();
+    _tokenManager.addListener(_onTokensChanged);
     // Prompt for password overlay when entering
     Future.delayed(Duration.zero, () => _showPasswordPrompt());
+  }
+
+  @override
+  void dispose() {
+    _tokenManager.removeListener(_onTokensChanged);
+    super.dispose();
+  }
+
+  void _onTokensChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _showPasswordPrompt() {
@@ -106,11 +124,41 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Token Balance',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Roboto',
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: accentTone,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  '${_tokenManager.tokenBalance} tokens',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
                           const Text(
                             'Top-up Tokens',
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
                               fontFamily: 'Roboto',
                             ),
                           ),
@@ -126,7 +174,7 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                               ),
                             ),
                             onPressed: () {
-                              // Future money API integration
+                              PaymentService.showTokenPurchaseDialog(context);
                             },
                           ),
                         ],
@@ -134,30 +182,99 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Top-up History',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Transaction History',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Roboto',
+                        ),
+                      ),
+                      if (_tokenManager.transactions.isNotEmpty)
+                        TextButton(
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Clear History'),
+                                content: const Text(
+                                    'Are you sure you want to clear all transaction history?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('Clear'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await _tokenManager.clearHistory();
+                            }
+                          },
+                          child: const Text('Clear'),
+                        ),
+                    ],
                   ),
                   const Divider(),
                   Expanded(
-                    child: ListView(
-                      children: const [
-                        ListTile(
-                          leading: Icon(Icons.monetization_on),
-                          title: Text('10 tokens topped up on Oct 1'),
-                          subtitle: Text('Transaction ID: TXN001'),
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.monetization_on),
-                          title: Text('5 tokens topped up on Oct 8'),
-                          subtitle: Text('Transaction ID: TXN002'),
-                        ),
-                      ],
-                    ),
+                    child: _tokenManager.transactions.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No transactions yet.\nPurchase tokens to see history here.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: _tokenManager.transactions.length,
+                            itemBuilder: (context, index) {
+                              final transaction =
+                                  _tokenManager.transactions[index];
+                              final dateFormat = DateFormat('MMM d, yyyy');
+                              final timeFormat = DateFormat('h:mm a');
+                              
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: accentTone,
+                                  child: const Icon(Icons.monetization_on,
+                                      color: Colors.white),
+                                ),
+                                title: Text(
+                                  '${transaction.tokens} tokens - \$${transaction.price.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  '${dateFormat.format(transaction.date)} at ${timeFormat.format(transaction.date)}\n'
+                                  'Transaction ID: ${transaction.id}',
+                                ),
+                                trailing: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    transaction.status,
+                                    style: TextStyle(
+                                      color: Colors.green.shade700,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                   ),
                 ],
               ),
