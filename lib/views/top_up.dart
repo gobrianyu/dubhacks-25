@@ -1,4 +1,5 @@
 import 'package:dubhacks_25/models/balance_manager.dart';
+import 'package:dubhacks_25/views/token_purchase_page.dart';
 import 'package:flutter/material.dart';
 import '../models/account_manager.dart';
 
@@ -49,13 +50,20 @@ class _TopUpPageState extends State<TopUpPage> {
               title: 'Add Tokens',
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.monetization_on),
-                label: const Text('Add 10 Tokens'),
-                onPressed: () {
-                  widget.accountManager.purchaseTokens(10);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Added 10 tokens (demo).')),
+                label: const Text('Add Tokens'),
+                onPressed: () async {
+                  final tokensBought = await Navigator.push<int>(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TokenPurchasePage()),
                   );
-                  setState(() {});
+
+                  if (tokensBought != null && tokensBought > 0) {
+                    widget.accountManager.purchaseTokens(tokensBought);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Added $tokensBought tokens!')),
+                    );
+                    setState(() {});
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFA5D6A7),
