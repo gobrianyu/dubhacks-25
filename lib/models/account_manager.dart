@@ -11,7 +11,6 @@ class AccountManager {
   int _questionsAnswered;
   int _tokensEarned;
   String _password;
-  int _numQuestions;
 
   final Map<DateTime, List<String>> _streakHistory = {};
 
@@ -24,6 +23,27 @@ class AccountManager {
   final List<Map<String, dynamic>> _topUpHistory = [];
 
   List<Map<String, dynamic>> get topUpHistory => List.unmodifiable(_topUpHistory);
+
+  int _childAge = 8;
+  int _requiredQuizScore = 70; // percent
+  int _numQuestionsPerQuiz = 5;
+
+  int get childAge => _childAge;
+  int get requiredQuizScore => _requiredQuizScore;
+  int get numQuestionsPerQuiz => _numQuestionsPerQuiz;
+
+  set childAge(int age) {
+    if (age > 0) _childAge = age;
+  }
+
+  set requiredQuizScore(int score) {
+    if (score >= 0 && score <= 100) _requiredQuizScore = score;
+  }
+
+  set numQuestionsPerQuiz(int num) {
+    if (num > 0) _numQuestionsPerQuiz = num;
+  }
+
 
   void purchaseTokens(int amount) {
     _balance.addTokens(amount);
@@ -57,8 +77,7 @@ class AccountManager {
         _balance = BalanceManager(),
         _history = [],
         _questionsAnswered = 0,
-        _tokensEarned = 0,
-        _numQuestions = 5;
+        _tokensEarned = 0;
 
   // ----- Getters -----
   String get userId => _userId;
@@ -69,7 +88,6 @@ class AccountManager {
   int get questionsAnswered => _questionsAnswered;
   List<String> get history => List.unmodifiable(_history);
   String get pw => _password;
-  int get numQuestions => _numQuestions;
 
   /// Returns streak history within last 2 months (from today)
   Map<DateTime, List<String>> get streakHistory {
@@ -86,10 +104,6 @@ class AccountManager {
   // ----- Setters -----
   set username(String name) {
     if (name.isNotEmpty) _username = name;
-  }
-
-  set questionAmount(int num) {
-    _numQuestions = num;
   }
 
   set newPassword(String pw) {
@@ -118,26 +132,27 @@ class AccountManager {
     _streakHistory.removeWhere((date, _) => date.isBefore(expiration));
   }
 
-  void recordQuestionResult({required bool correct, int reward = 5}) {
-    _questionsAnswered++;
-    if (correct) {
-      _tokensEarned += reward;
-      _balance.addTokens(reward);
-      logEvent('Earned $reward tokens');
-    }
+  void recordQuestionResult({required bool correct}) {
+    if (correct) _questionsAnswered++;
     if (_questionsAnswered % 20 == 0) {
       _userLevel++;
       logEvent('Level up! Now level $_userLevel');
     }
   }
 
+  void earnTokens({required int amount}) {
+    _tokensEarned += amount;
+    _balance.earnTokens(amount);
+    logEvent('Earned $amount tokens');
+  }
+
   Map<String, dynamic> toJson() => {
-        'userId': _userId,
-        'username': _username,
-        'userLevel': _userLevel,
-        'tokensEarned': _tokensEarned,
-        'balance': _balance.toJson(),
-        'history': _history,
-        'streakHistory': streakHistory.map((k, v) => MapEntry(k.toIso8601String(), v)),
-      };
+    'userId': _userId,
+    'username': _username,
+    'userLevel': _userLevel,
+    'tokensEarned': _tokensEarned,
+    'balance': _balance.toJson(),
+    'history': _history,
+    'streakHistory': streakHistory.map((k, v) => MapEntry(k.toIso8601String(), v)),
+  };
 }

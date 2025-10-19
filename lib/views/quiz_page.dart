@@ -94,7 +94,7 @@ class _QuizPageState extends State<QuizPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'There are ${widget.accountManager.numQuestions} questions today!',
+              'There are ${widget.accountManager.numQuestionsPerQuiz} questions today!',
               style: const TextStyle(fontFamily: 'ComicNeue', fontSize: 16),
             ),
             const SizedBox(height: 20),
@@ -261,14 +261,14 @@ class _QuizPageState extends State<QuizPage> {
       triesResults[currentQuestionIndex].add(isCorrect);
       if (isCorrect) {
         feedbackText = '🌟 Great job! You got it right!';
-        widget.accountManager.recordQuestionResult(correct: true, reward: 5);
+        widget.accountManager.recordQuestionResult(correct: true);
         _nextQuestion();
       } else {
         triesLeft--;
         feedbackText = triesLeft > 0
             ? 'Not quite! Try again! You have $triesLeft tries left.'
             : '❌ Out of tries! The correct answer was ${question.answer}.';
-        widget.accountManager.recordQuestionResult(correct: false, reward: 0);
+        widget.accountManager.recordQuestionResult(correct: false);
         if (triesLeft == 0) _nextQuestion();
       }
     });
@@ -288,11 +288,28 @@ class _QuizPageState extends State<QuizPage> {
           feedbackText = '';
           _answerController.clear();
         } else {
+          int correctCount = triesResults.where((r) => r.contains(true)).length;
+          double scorePercent = (correctCount / questions.length) * 100;
+
+          final maxTokensEarnable = widget.accountManager.balance.maxEarnablePerDay;
+          final unearnedBalance = widget.accountManager.balance.unearnedBalance;
+          int tokensEarnedThisSession = 0;
+
+          if (scorePercent >= widget.accountManager.requiredQuizScore && unearnedBalance > 0) {
+            tokensEarnedThisSession = unearnedBalance >= maxTokensEarnable ? maxTokensEarnable : unearnedBalance;
+            widget.accountManager.earnTokens(amount: tokensEarnedThisSession);
+            feedbackText = '🎉 Congrats! You earned $tokensEarnedThisSession tokens!';
+          } else {
+            feedbackText = '😞 You didn\'t score high enough. Please try again to earn tokens.';
+          }
           showSummary = true;
+          triesLeft = 0;
+          hintUnlocked = false;
         }
       });
     });
   }
+
 
   Widget _buildSummaryPage(BuildContext context) {
     return Center(
@@ -306,6 +323,21 @@ class _QuizPageState extends State<QuizPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (feedbackText.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                  feedbackText,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: feedbackText.contains('Congrats') ? Colors.green : Colors.red,
+                    fontFamily: 'ComicNeue',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
             const Text(
               'Quiz Summary',
               style: TextStyle(fontFamily: 'ComicNeue', fontWeight: FontWeight.bold, fontSize: 24),
@@ -369,6 +401,25 @@ class _QuizPageState extends State<QuizPage> {
                 });
               },
             ),
+            if (feedbackText.contains('below required'))
+              _buildButton(
+                context,
+                label: 'Retake Quiz',
+                color: nostalgicColors['berry']!,
+                onPressed: () {
+                  setState(() {
+                    quizStarted = true;
+                    showSummary = false;
+                    currentQuestionIndex = 0;
+                    triesLeft = 3;
+                    triesResults = List.generate(questions.length, (_) => []);
+                    _answerController.clear();
+                    feedbackText = '';
+                    hintUnlocked = false;
+                  });
+                },
+              ),
+
           ],
         ),
       ),

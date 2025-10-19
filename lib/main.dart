@@ -8,7 +8,6 @@ void main() {
   final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
 
   accountManager.purchaseTokens(50);
-  accountManager.recordQuestionResult(correct: true, reward: 5);
 
   final year = DateTime.now().year;
   const month = 10; // October

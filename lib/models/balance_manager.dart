@@ -2,7 +2,6 @@ class BalanceManager {
   int _tokenBalance = 0;              // Earned tokens usable now
   int _unearnedBalance = 0;           // Tokens bought but unearned yet
   int _weeklyAllowance = 0;
-  int _availableToEarn = 0;
   int _maxEarnablePerDay = 10;        // New: Max tokens child can earn per day
 
   // Keeps track of token top-up history with timestamps for expiry.
@@ -11,13 +10,7 @@ class BalanceManager {
   int get tokenBalance => _tokenBalance;
   int get unearnedBalance => _unearnedBalance;
   int get weeklyAllowance => _weeklyAllowance;
-  int get availableToEarn => _availableToEarn;
   int get maxEarnablePerDay => _maxEarnablePerDay;
-
-  void setWeeklyAllowance(int amount) {
-    _weeklyAllowance = amount;
-    _availableToEarn = amount;
-  }
 
   void setMaxEarnablePerDay(int amount) {
     _maxEarnablePerDay = amount;
@@ -33,11 +26,10 @@ class BalanceManager {
   // Moves tokens from unearned to permanent balance when quizzes are completed.
   bool earnTokens(int amount) {
     _removeExpiredTokens();
-    if (amount > _unearnedBalance || amount > _availableToEarn) return false;
+    if (amount > _unearnedBalance) return false;
 
     _unearnedBalance -= amount;
     _tokenBalance += amount;
-    _availableToEarn -= amount;
     return true;
   }
 
@@ -63,7 +55,6 @@ class BalanceManager {
         'tokenBalance': _tokenBalance,
         'unearnedBalance': _unearnedBalance,
         'weeklyAllowance': _weeklyAllowance,
-        'availableToEarn': _availableToEarn,
         'maxEarnablePerDay': _maxEarnablePerDay,
         'topUpEntries': _topUpEntries.map((e) => e.toJson()).toList(),
       };

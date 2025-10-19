@@ -1,4 +1,5 @@
 import 'package:dubhacks_25/main.dart';
+import 'package:dubhacks_25/views/quiz_settings.dart';
 import 'package:flutter/material.dart';
 import '../models/account_manager.dart';
 import 'top_up.dart';
@@ -75,6 +76,7 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: primaryTone,
@@ -128,6 +130,20 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  _buildActionCard(
+                    context,
+                    title: '⚙️ Quiz Settings',
+                    subtitle: 'Set child age, quiz score, and questions per quiz.',
+                    color: accentTone,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => QuizSettingsPage(accountManager: widget.accountManager),
+                      ),
+                    ),
+                  ),
+
                 ],
               ),
             ),

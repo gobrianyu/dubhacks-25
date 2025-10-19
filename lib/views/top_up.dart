@@ -75,7 +75,7 @@ class _TopUpPageState extends State<TopUpPage> {
               child: DropdownButton<int>(
                 value: _selectedMaxTokens,
                 isExpanded: true,
-                items: [5, 10, 15, 20]
+                items: [1, 2, 3, 4, 5, 10, 15, 20]
                     .map((val) => DropdownMenuItem(value: val, child: Text('$val tokens')))
                     .toList(),
                 onChanged: (val) {
@@ -165,6 +165,7 @@ class _TopUpHistoryList extends StatelessWidget {
   final List<TopUpEntry> topUpHistory;
 
   const _TopUpHistoryList({required this.topUpHistory});
+  final Color accentTone = const Color.fromARGB(255, 104, 135, 151);
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +181,7 @@ class _TopUpHistoryList extends StatelessWidget {
               itemBuilder: (context, index) {
                 final entry = topUpHistory[index];
                 return ListTile(
-                  leading: const Icon(Icons.attach_money, color: Color(0xFFB4E9FF)),
+                  leading: Icon(Icons.attach_money, color: accentTone),
                   title: Text('${entry.amount} tokens',
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   subtitle:
