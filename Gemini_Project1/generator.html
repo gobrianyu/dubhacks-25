@@ -1,0 +1,154 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gemini Math Generator</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Arial,sans-serif;margin:24px;background:#f6f7fb}
+  h1{margin:0 0 12px 0}
+  form{display:grid;gap:10px;max-width:700px;background:#fff;padding:16px;border-radius:12px;border:1px solid #e5e7eb}
+  input,select,button,textarea{padding:10px 12px;border:1px solid #d0d5dd;border-radius:8px;background:#fff}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-top:16px}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .pill{display:inline-block;background:#eef;border:1px solid #dde;border-radius:999px;padding:2px 8px;font-size:12px;margin-right:6px}
+  ol{margin:0;padding-left:20px}
+  .answer strong{background:#ecfdf5;color:#065f46;padding:2px 6px;border-radius:6px}
+  #bar{display:flex;gap:8px;align-items:center;margin:12px 0}
+</style>
+<h1>🧮 Gemini Math Generator</h1>
+
+<form id="f">
+  <div class="row">
+    <label>API Key
+      <input id="key" type="password" placeholder="paste your Gemini key" required>
+    </label>
+    <label>Model
+      <select id="model">
+        <option>gemini-2.0-flash</option>
+        <option>gemini-1.5-flash</option>
+      </select>
+    </label>
+  </div>
+  <div class="row">
+    <label>Topic
+      <input id="topic" placeholder="fractions, linear equations, percentages…" value="fractions" required>
+    </label>
+    <label>Grade band
+      <select id="grade">
+        <option>3-5</option><option selected>6-8</option><option>9-10</option><option>11-12</option>
+      </select>
+    </label>
+  </div>
+  <div class="row">
+    <label>Count
+      <input id="count" type="number" min="1" max="20" value="5" required>
+    </label>
+    <label>Difficulty
+      <select id="diff"><option>easy</option><option>medium</option><option>hard</option></select>
+    </label>
+  </div>
+  <div class="row">
+    <label>Type
+      <select id="qtype"><option value="mcq">mcq</option><option value="open" selected>open</option></select>
+    </label>
+    <div></div>
+  </div>
+  <button>Generate</button>
+</form>
+
+<div id="bar">
+  <button id="save" disabled>Download JSON</button>
+</div>
+<div id="out" class="grid"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const out = $('#out'); const saveBtn = $('#save');
+
+function cleanJsonText(s){
+  return s.replace(/^\s*```json\s*/i,'').replace(/^\s*```\s*/i,'').replace(/\s*```\s*$/i,'');
+}
+function card(p){
+  const opts = Array.isArray(p.options)? `<ol>${p.options.map((o,i)=> {
+    const L="ABCD"[i]||""; const mark=(String(p.answer).trim().toUpperCase()===L)?" <strong>✓</strong>":"";
+    return `<li><strong>${L}.</strong> ${escapeHtml(o)}${mark}</li>`;
+  }).join('')}</ol>` : '';
+  return `<article class="card">
+    <div>${p.gradeBand?`<span class="pill">${p.gradeBand}</span>`:''}
+         ${p.topic?`<span class="pill">${escapeHtml(p.topic)}</span>`:''}
+         ${p.difficulty?`<span class="pill">${p.difficulty}</span>`:''}
+         ${p.type?`<span class="pill">${p.type}</span>`:''}</div>
+    <div style="font-weight:600;margin:6px 0 8px 0">${escapeHtml(p.prompt||'')}</div>
+    ${opts}
+    <div class="answer"><strong>Answer:</strong> ${escapeHtml(p.answer||'')}</div>
+    ${p.explanation?`<div><em>${escapeHtml(p.explanation)}</em></div>`:''}
+  </article>`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))}
+
+let lastPayload = null;
+
+$('#f').addEventListener('submit', async (e)=>{
+  e.preventDefault(); out.innerHTML='Generating… ⏳'; saveBtn.disabled = true;
+
+  const key   = $('#key').value.trim();
+  const model = $('#model').value;
+  const topic = $('#topic').value.trim();
+  const grade = $('#grade').value;
+  const count = Math.max(1, Math.min(20, +$('#count').value));
+  const diff  = $('#diff').value;
+  const qtype = $('#qtype').value;
+
+  const typeLine = qtype==='mcq'
+    ? `Multiple-choice with exactly 4 options labeled A, B, C, D. Put the correct letter in the 'answer' field.`
+    : `Open-response. Put a short correct answer in the 'answer' field.`;
+
+  const prompt = `
+Return ONLY a valid JSON array of ${count} ${diff} "${topic}" problems for grade band "${grade}".
+Each item: { "id": string, "gradeBand": "${grade}", "topic": "${topic}", "difficulty": "${diff}", "type": "${qtype}",
+"prompt": string, ${qtype==='mcq'?`"options": [A,B,C,D], "answer": "A|B|C|D"`:`"answer": string`} , "explanation": string }.
+${typeLine}
+No extra text or markdown.`;
+
+  const body = JSON.stringify({ contents: [{ role:'user', parts:[{ text: prompt }]}] });
+
+  try{
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body
+    });
+    if(!res.ok){
+      const err = await res.text();
+      throw new Error(`HTTP ${res.status}: ${err}`);
+    }
+    const data = await res.json();
+    let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+    text = cleanJsonText(text);
+    lastPayload = JSON.parse(text); // array
+    // normalize
+    lastPayload = lastPayload.map((p,i)=>({
+      id: p.id ?? `q${i+1}`,
+      gradeBand: p.gradeBand ?? grade,
+      topic: p.topic ?? topic,
+      difficulty: p.difficulty ?? diff,
+      type: p.type ?? qtype,
+      prompt: p.prompt ?? '',
+      options: Array.isArray(p.options)? p.options : undefined,
+      answer: p.answer ?? '',
+      explanation: p.explanation ?? '',
+    }));
+    out.innerHTML = lastPayload.map(card).join('');
+    saveBtn.disabled = false;
+  }catch(err){
+    out.innerHTML = `<div style="color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:10px;border-radius:8px">
+      <strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
+    saveBtn.disabled = true;
+  }
+});
+
+saveBtn.addEventListener('click', ()=>{
+  if(!lastPayload) return;
+  const blob = new Blob([JSON.stringify(lastPayload,null,2)], {type:'application/json;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'math_set.json';
+  a.click();
+});
+</script>

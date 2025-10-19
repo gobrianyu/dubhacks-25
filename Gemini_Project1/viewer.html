@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Math Set Viewer (Gemini)</title>
+<style>
+  :root { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  body { margin: 24px; background: #f6f7fb; color: #111; }
+  header { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .btn { padding: 10px 14px; border: 1px solid #ddd; background: white; border-radius: 10px; cursor: pointer; }
+  .btn:hover { background: #f0f2f5; }
+  .pill { padding: 2px 8px; font-size: 12px; border-radius: 999px; background: #eef; color:#224; border:1px solid #dde; }
+  #filters{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:6px 0 16px 0;}
+  input[type="search"]{padding:10px 12px; border-radius:8px; border:1px solid #d0d5dd; min-width:260px; background:white;}
+  select{padding:10px 12px; border-radius:8px; border:1px solid #d0d5dd; background:white;}
+  #drop { border:2px dashed #cbd5e1; background:#fff; border-radius:12px; padding:18px; text-align:center; color:#475569; }
+  #drop.dragover{ background:#f1f5f9; border-color:#94a3b8; }
+  .grid { display:grid; gap:14px; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); }
+  .card { background:white; border:1px solid #e5e7eb; border-radius:14px; padding:14px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+  .meta { display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
+  .q { font-weight:600; margin:6px 0 8px 0; }
+  ol.options { margin:0; padding-left:20px; }
+  .answer { margin-top:8px; }
+  .answer strong{ background:#ecfdf5; color:#065f46; padding:2px 6px; border-radius:6px; }
+  .explain { margin-top:6px; color:#334155; }
+  footer { margin-top:18px; font-size:12px; color:#64748b; }
+  .hidden{ display:none !important; }
+  @media print { header, #filters, #drop, .toolbar, footer { display:none !important; } body{ background:white; } .card{ break-inside:avoid-page; } }
+</style>
+</head>
+<body>
+  <header>
+    <h1 style="margin:0;">🧮 Math Set Viewer</h1>
+    <span class="pill" id="fileCount">0 files</span>
+    <div class="toolbar">
+      <button class="btn" id="openFiles">Open JSON…</button>
+      <button class="btn" id="printBtn">Print</button>
+      <button class="btn" id="exportCsvBtn">Export CSV</button>
+    </div>
+  </header>
+
+  <div id="filters">
+    <input type="search" id="search" placeholder="Filter by text (topic, prompt, explanation…)" />
+    <select id="gradeFilter"><option value="">All grades</option></select>
+    <select id="typeFilter">
+      <option value="">All types</option>
+      <option value="mcq">MCQ</option>
+      <option value="open">Open-response</option>
+    </select>
+  </div>
+
+  <div id="drop">Drop your JSON files here from <code>out\</code> or click “Open JSON…”</div>
+
+  <section id="results" class="grid"></section>
+  <footer id="foot"></footer>
+
+<script>
+const el = (sel) => document.querySelector(sel);
+const results = el('#results');
+const drop = el('#drop');
+const search = el('#search');
+const gradeFilter = el('#gradeFilter');
+const typeFilter = el('#typeFilter');
+const exportCsvBtn = el('#exportCsvBtn');
+const printBtn = el('#printBtn');
+const openBtn = el('#openFiles');
+const fileInput = Object.assign(document.createElement('input'), { type: 'file', multiple: true, accept: '.json,application/json' });
+
+let allProblems = []; // flat list of {id, gradeBand, topic, difficulty, type, prompt, options?, answer, explanation, _source}
+let uniqueGrades = new Set();
+
+function normalizePayload(obj, sourceName) {
+  // Accept either [{...}] or { problems:[...] }
+  let arr = Array.isArray(obj) ? obj : Array.isArray(obj?.problems) ? obj.problems : [];
+  return arr.map((p, i)=>({
+    id: p.id ?? `q${i+1}`,
+    gradeBand: p.gradeBand ?? "",
+    topic: p.topic ?? "",
+    difficulty: p.difficulty ?? "",
+    type: p.type ?? (p.options ? "mcq" : "open"),
+    prompt: String(p.prompt ?? ""),
+    options: Array.isArray(p.options) ? p.options : null,
+    answer: String(p.answer ?? ""),
+    explanation: String(p.explanation ?? ""),
+    _source: sourceName
+  }));
+}
+
+function render() {
+  // filters
+  const q = search.value.trim().toLowerCase();
+  const g = gradeFilter.value;
+  const t = typeFilter.value;
+
+  const items = allProblems.filter(p => {
+    const textHit = !q || (p.prompt + " " + p.topic + " " + p.explanation).toLowerCase().includes(q);
+    const gradeHit = !g || p.gradeBand === g;
+    const typeHit = !t || p.type === t;
+    return textHit && gradeHit && typeHit;
+  });
+
+  results.innerHTML = items.map(p => {
+    const optionsHtml = p.options ? (
+      `<ol class="options">
+        ${p.options.map((opt, idx) => {
+          const letter = ["A","B","C","D"][idx] || "";
+          const mark = (p.answer?.trim().toUpperCase() === letter) ? " <strong>✓</strong>" : "";
+          return `<li><strong>${letter}.</strong> ${escapeHtml(opt)}${mark}</li>`;
+        }).join("")}
+      </ol>`
+    ) : "";
+
+    return `<article class="card">
+      <div class="meta">
+        ${p.gradeBand ? `<span class="pill">${escapeHtml(p.gradeBand)}</span>` : ""}
+        ${p.topic ? `<span class="pill">${escapeHtml(p.topic)}</span>` : ""}
+        ${p.difficulty ? `<span class="pill">${escapeHtml(p.difficulty)}</span>` : ""}
+        ${p.type ? `<span class="pill">${escapeHtml(p.type)}</span>` : ""}
+        ${p._source ? `<span class="pill" title="File">${escapeHtml(p._source)}</span>` : ""}
+      </div>
+      <div class="q">${escapeHtml(p.prompt)}</div>
+      ${optionsHtml}
+      <div class="answer"><strong>Answer:</strong> ${escapeHtml(p.answer)}</div>
+      ${p.explanation ? `<div class="explain"><strong>Why:</strong> ${escapeHtml(p.explanation)}</div>` : ""}
+    </article>`;
+  }).join("");
+
+  el('#fileCount').textContent = `${new Set(allProblems.map(p=>p._source)).size} file(s)`;
+  // populate grade dropdown once
+  gradeFilter.innerHTML = `<option value="">All grades</option>` + [...uniqueGrades].sort().map(g => `<option value="${g}">${g}</option>`).join("");
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function readFile(file){
+  const text = await file.text();
+  try {
+    const json = JSON.parse(text);
+    const items = normalizePayload(json, file.name);
+    if (items.length === 0) throw new Error("No problems found in file");
+    allProblems.push(...items);
+    items.forEach(p => { if (p.gradeBand) uniqueGrades.add(p.gradeBand); });
+  } catch (e) {
+    alert(`Failed to read ${file.name}: ${e.message}`);
+  }
+}
+
+async function handleFiles(fileList){
+  allProblems = [];
+  uniqueGrades = new Set();
+  for (const f of fileList) { await readFile(f); }
+  render();
+}
+
+// UI wiring
+openBtn.onclick = () => { fileInput.click(); };
+fileInput.onchange = () => handleFiles(fileInput.files);
+drop.ondragover = (e)=>{ e.preventDefault(); drop.classList.add('dragover'); };
+drop.ondragleave = ()=> drop.classList.remove('dragover');
+drop.ondrop = async (e)=>{ e.preventDefault(); drop.classList.remove('dragover'); await handleFiles(e.dataTransfer.files); };
+search.oninput = render;
+typeFilter.onchange = render;
+gradeFilter.onchange = render;
+printBtn.onclick = ()=> window.print();
+
+exportCsvBtn.onclick = () => {
+  if (!allProblems.length) return alert("Load some JSON files first.");
+  const rows = allProblems.map(p => ({
+    id: p.id, gradeBand: p.gradeBand, topic: p.topic, difficulty: p.difficulty,
+    type: p.type, prompt: p.prompt,
+    optionA: p.options?.[0] ?? "", optionB: p.options?.[1] ?? "",
+    optionC: p.options?.[2] ?? "", optionD: p.options?.[3] ?? "",
+    answer: p.answer, explanation: p.explanation, source: p._source
+  }));
+  const csv = toCSV(rows);
+  const blob = new Blob([csv], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "math_sets.csv";
+  a.click();
+};
+
+function toCSV(arr){
+  const cols = Object.keys(arr[0] || {empty:""});
+  const esc = (s) => `"${String(s ?? "").replace(/"/g,'""')}"`;
+  return [cols.join(","), ...arr.map(r => cols.map(k => esc(r[k])).join(","))].join("\r\n");
+}
+</script>
+</body>
+</html>

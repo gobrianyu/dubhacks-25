@@ -1,0 +1,72 @@
+﻿```json
+[
+  {
+    "id": "as-35-001",
+    "prompt": "Lily has 25 stickers. Her friend gave her 12 more. How many stickers does Lily have in all?",
+    "type": "open",
+    "answer": "37",
+    "explanation": "To solve this problem, we need to find the total number of stickers Lily has. She started with 25 stickers and received 12 more. This means we should add the two numbers together. 25 plus 12 equals 37. Therefore, Lily has a total of 37 stickers. We can also check this using a number line or by breaking down the numbers. 20+10=30. 5+2=7. 30+7=37. This confirms our solution. So, the answer is 37 stickers."
+  },
+  {
+    "id": "as-35-002",
+    "prompt": "Ben had 48 crayons. He lost 15 of them. How many crayons does Ben have left?",
+    "type": "open",
+    "answer": "33",
+    "explanation": "To solve this, we need to figure out how many crayons Ben has remaining. Ben started with 48 crayons and lost 15, so we should subtract 15 from 48. 48 minus 15 equals 33. Therefore, Ben has 33 crayons left. We can verify this by adding 15 back to 33, which should give us 48. 33 plus 15 does indeed equal 48. Also, using a number line from 48 and moving 15 backward gives us 33, so the answer is 33 crayons."
+  },
+  {
+    "id": "as-35-003",
+    "prompt": "Sarah collected 32 seashells on Monday and 24 seashells on Tuesday. How many seashells did she collect in total?",
+    "type": "open",
+    "answer": "56",
+    "explanation": "To find the total number of seashells, we need to add the number of seashells Sarah collected on Monday and Tuesday. She collected 32 on Monday and 24 on Tuesday, so we need to add 32 and 24. 32 plus 24 equals 56.  Therefore, Sarah collected a total of 56 seashells. We can also break the numbers down; 30+20=50 and 2+4=6. Thus, 50+6=56. Therefore, the answer is 56 seashells."
+  },
+  {
+    "id": "as-35-004",
+    "prompt": "Tom has 63 marbles. He gave 21 marbles to his friend. How many marbles does Tom have now?",
+    "type": "open",
+    "answer": "42",
+    "explanation": "To figure out how many marbles Tom has left, we need to subtract the number of marbles he gave away from the number he started with. Tom started with 63 marbles and gave away 21, so we need to subtract 21 from 63. 63 minus 21 equals 42. Therefore, Tom now has 42 marbles. We can check this by adding 21 back to 42. This should be 63. Thus, the answer is 42 marbles."
+  },
+  {
+    "id": "as-35-005",
+    "prompt": "What is 45 + 32?",
+    "type": "mcq",
+    "options": {
+      "A": "76",
+      "B": "77",
+      "C": "78",
+      "D": "79"
+    },
+    "answer": "B",
+    "explanation": "To find the answer, we need to add 45 and 32. We can add the tens place first: 40 + 30 = 70. Then we can add the ones place: 5 + 2 = 7. Finally, we add the two results together: 70 + 7 = 77. Alternatively, we could add the two numbers vertically. First, 5+2=7. Then, 4+3=7. This results in the answer of 77. Therefore, 45 + 32 = 77."
+  },
+  {
+    "id": "as-35-006",
+    "prompt": "What is 87 - 24?",
+    "type": "mcq",
+    "options": {
+      "A": "61",
+      "B": "62",
+      "C": "63",
+      "D": "64"
+    },
+    "answer": "C",
+    "explanation": "To solve the problem we need to perform the subtraction. We can subtract the tens place first: 80 - 20 = 60. Then we can subtract the ones place: 7 - 4 = 3. Finally, we combine the two results together: 60 + 3 = 63. Alternatively, we can simply subtract the two numbers vertically, and this arrives us with the answer of 63. Therefore, the answer is 63."
+  },
+  {
+    "id": "as-35-007",
+    "prompt": "A baker made 54 cookies. She sold 31 cookies in the morning. How many cookies does she have left to sell?",
+    "type": "open",
+    "answer": "23",
+    "explanation": "We need to determine the number of cookies the baker still has to sell after selling some in the morning. She started with 54 cookies and sold 31 cookies. To find out how many are left, we need to subtract 31 from 54. 54 minus 31 equals 23. Therefore, the baker has 23 cookies left to sell. We can check this using number line and a movement of 31 places backward. So, the answer is 23."
+  },
+  {
+    "id": "as-35-008",
+    "prompt": "John has 17 toy cars. He gets 11 more for his birthday. Then he gives 5 to his little brother. How many cars does John have?",
+    "type": "open",
+    "answer": "23",
+    "explanation": "To solve this multi-step problem, we first need to find the total number of cars John has after his birthday. He started with 17 cars and got 11 more, so we need to add 17 and 11. 17 plus 11 equals 28. Now, he gives 5 cars away, so we need to subtract 5 from 28. 28 minus 5 equals 23. Therefore, John has 23 cars. We can simplify this process and avoid using the number line."
+  }
+]
+```
