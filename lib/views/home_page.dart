@@ -1,3 +1,4 @@
+import 'package:dubhacks_25/views/redeem_card_page.dart';
 import 'package:dubhacks_25/views/streak_history.dart';
 import 'package:flutter/material.dart';
 import '../models/account_manager.dart';
@@ -60,6 +61,7 @@ class _HomePageState extends State<HomePage> {
     final balance = widget.accountManager.balance;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: nostalgicColors['sky'],
       appBar: AppBar(
         leading: Container(
@@ -123,11 +125,14 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                _infoCard(
-                  icon: Icons.monetization_on,
-                  label: 'Tokens',
-                  value: '${balance.tokenBalance}',
-                  color: nostalgicColors['grass']!,
+                GestureDetector(
+                  onTap: () => _navigateTo(RedeemCardPage(accountManager: widget.accountManager)),
+                  child: _infoCard(
+                    icon: Icons.monetization_on,
+                    label: 'Tokens',
+                    value: '${balance.tokenBalance}',
+                    color: nostalgicColors['grass']!,
+                  ),
                 ),
                 _infoCard(
                   icon: Icons.star,

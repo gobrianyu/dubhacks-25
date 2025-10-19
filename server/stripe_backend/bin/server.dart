@@ -101,7 +101,7 @@ Future<String> _invokeGemini(String model, String apiKey, String prompt) async {
   return text;
 }
 
-bool _compareAnswers(String expected, String given) {
+bool compareAnswers(String expected, String given) {
   expected = expected.trim().toLowerCase();
   given = given.trim().toLowerCase();
   if (expected == given) return true;
@@ -290,6 +290,191 @@ app.post('/generateQuestion', (Request req) async {
       }
     });
   });
+
+  // ======================
+  // STRIPE PREPAID CARD (ISSUING)
+  // ======================
+  app.post('/create-prepaid-card', (Request request) async {
+    if (secretKey == null) {
+      return jsonResponse({'error': 'Missing STRIPE_SECRET_KEY'}, status: 500);
+    }
+
+    try {
+      final body = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final cardholderName = body['cardholder_name'] ?? 'Test User';
+
+      // Step 1: Create a Cardholder
+      final cardholderResp = await http.post(
+        Uri.parse('https://api.stripe.com/v1/issuing/cardholders'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $secretKey',
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'name': cardholderName,
+          'email': '${cardholderName.replaceAll(' ', '.').toLowerCase()}@example.com',
+          'status': 'active',
+          'type': 'individual',
+          'billing[address][line1]': '123 Test Street',
+          'billing[address][city]': 'Test City',
+          'billing[address][state]': 'CA',
+          'billing[address][postal_code]': '94107',
+          'billing[address][country]': 'US',
+        },
+      );
+
+      if (cardholderResp.statusCode != 200) {
+        return jsonResponse({'error': 'Failed to create cardholder', 'details': cardholderResp.body}, status: 500);
+      }
+
+      final cardholder = jsonDecode(cardholderResp.body);
+      final cardholderId = cardholder['id'];
+
+      // Step 2: Create a Prepaid Virtual Card
+      final cardResp = await http.post(
+        Uri.parse('https://api.stripe.com/v1/issuing/cards'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $secretKey',
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'cardholder': cardholderId,
+          'currency': 'usd',
+          'type': 'virtual',
+          'status': 'active',
+        },
+      );
+
+      if (cardResp.statusCode != 200) {
+        return jsonResponse({'error': 'Failed to create card', 'details': cardResp.body}, status: 500);
+      }
+
+      final card = jsonDecode(cardResp.body);
+      final cardId = card['id'];
+
+      // Step 3: Return basic details (no sensitive info)
+      return jsonResponse({
+        'success': true,
+        'card_id': cardId,
+        'cardholder_id': cardholderId,
+        'status': card['status'],
+        'type': card['type'],
+        'last4': card['last4'],
+        'exp_month': card['exp_month'],
+        'exp_year': card['exp_year'],
+      });
+    } catch (e) {
+      return jsonResponse({'error': 'Exception creating card: $e'}, status: 500);
+    }
+  });
+
+  // POST /redeem-prepaid-card
+  app.post('/redeem-prepaid-card', (Request req) async {
+    if (secretKey == null) {
+      return jsonResponse({'error': 'Missing Stripe secret key'}, status: 500);
+    }
+
+    final body = json.decode(await req.readAsString()) as Map<String, dynamic>;
+    final String userName = body['name'] ?? 'Test User';
+    final String email = body['email'] ?? 'test@example.com';
+    final int amount = body['amount'] ?? 0; // cents
+
+    if (amount <= 0) {
+      return jsonResponse({'error': 'Amount must be > 0'}, status: 400);
+    }
+
+    try {
+      // 1️⃣ Create a cardholder (individual)
+      final cardholderResp = await http.post(
+        Uri.parse('https://api.stripe.com/v1/issuing/cardholders'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $secretKey',
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'name': userName,
+          'email': email,
+          'type': 'individual',
+          'billing[address][line1]': '123 Test Street',
+          'billing[address][city]': 'Testville',
+          'billing[address][state]': 'CA',
+          'billing[address][postal_code]': '12345',
+          'billing[address][country]': 'US',
+          'individual[dob][day]': '1',
+          'individual[dob][month]': '1',
+          'individual[dob][year]': '2000',
+          'individual[address][line1]': '123 Test Street',
+          'individual[address][city]': 'Testville',
+          'individual[address][state]': 'CA',
+          'individual[address][postal_code]': '12345',
+          'individual[address][country]': 'US',
+        },
+      );
+
+      if (cardholderResp.statusCode != 200) {
+        return Response(cardholderResp.statusCode,
+            body: cardholderResp.body,
+            headers: {'content-type': 'application/json'});
+      }
+
+      final cardholderData = json.decode(cardholderResp.body);
+      final String cardholderId = cardholderData['id'];
+
+      // 2️⃣ Issue a virtual card
+      final cardResp = await http.post(
+        Uri.parse('https://api.stripe.com/v1/issuing/cards'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $secretKey',
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'cardholder': cardholderId,
+          'currency': 'usd',
+          'type': 'virtual',
+        },
+      );
+
+      if (cardResp.statusCode != 200) {
+        return Response(cardResp.statusCode,
+            body: cardResp.body,
+            headers: {'content-type': 'application/json'});
+      }
+
+      final cardData = json.decode(cardResp.body);
+      final String cardId = cardData['id'];
+
+      // 3️⃣ Fund the card with the requested amount (create a balance transaction)
+      final fundResp = await http.post(
+        Uri.parse('https://api.stripe.com/v1/issuing/authorizations'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $secretKey',
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'card': cardId,
+          'amount': amount.toString(),
+          'currency': 'usd',
+          'merchant_data[name]': 'Token Funding',
+          'pending': 'false',
+        },
+      );
+
+      if (fundResp.statusCode != 200) {
+        return Response(fundResp.statusCode,
+            body: fundResp.body,
+            headers: {'content-type': 'application/json'});
+      }
+
+      return jsonResponse({
+        'card': cardData,
+        'funding': json.decode(fundResp.body),
+      });
+    } catch (e) {
+      return jsonResponse({'error': e.toString()}, status: 500);
+    }
+  });
+
+
 
   // ======================
   // SERVER
