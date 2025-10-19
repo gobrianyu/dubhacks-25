@@ -4,7 +4,7 @@ import '../models/account_manager.dart';
 class QuizPage extends StatefulWidget {
   final AccountManager accountManager;
 
-  QuizPage({Key? key, required this.accountManager}) : super(key: key);
+  const QuizPage({super.key, required this.accountManager});
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -50,7 +50,7 @@ class _QuizPageState extends State<QuizPage> {
               decoration: BoxDecoration(
                 color: nostalgicColors['cloud'],
                 borderRadius: BorderRadius.circular(24),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 6,
@@ -58,8 +58,8 @@ class _QuizPageState extends State<QuizPage> {
                   ),
                 ],
               ),
-              child: Column(
-                children: const [
+              child: const Column(
+                children: [
                   Text(
                     'Solve this!',
                     style: TextStyle(
@@ -112,7 +112,7 @@ class _QuizPageState extends State<QuizPage> {
               },
             ),
             const SizedBox(height: 30),
-            Spacer(),
+            const Spacer(),
             AnimatedContainer(
               duration: const Duration(milliseconds: 400),
               padding: const EdgeInsets.all(16),

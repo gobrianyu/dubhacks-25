@@ -4,7 +4,7 @@ import '../models/account_manager.dart';
 class TopUpPage extends StatelessWidget {
   final AccountManager accountManager;
 
-  const TopUpPage({Key? key, required this.accountManager}) : super(key: key);
+  const TopUpPage({super.key, required this.accountManager});
 
   @override
   Widget build(BuildContext context) {

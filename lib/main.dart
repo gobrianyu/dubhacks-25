@@ -4,15 +4,16 @@ import 'views/go_to_sleep.dart';
 import 'models/account_manager.dart';
 
 void main() {
-  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero');
+  // Hardcoded account for demo purposes
+  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
 
   accountManager.purchaseTokens(50);
   accountManager.recordQuestionResult(correct: true, reward: 5);
 
   final year = DateTime.now().year;
-  final month = 10; // October
+  const month = 10; // October
 
-  final List<int> demoDays = [1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 15, 17, 18];
+  final List<int> demoDays = [18, 17, 15, 14, 13, 11, 10, 8, 7, 5, 4, 3, 2, 1];
   for (final day in demoDays) {
     final date = DateTime(year, month, day);
 
@@ -48,7 +49,7 @@ class MathKidsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Math Kids',
       home: curfew
-          ? const GoToSleepPage()
+          ? GoToSleepPage(accountManager: accountManager)
           : HomePage(accountManager: accountManager),
       debugShowCheckedModeBanner: false,
     );

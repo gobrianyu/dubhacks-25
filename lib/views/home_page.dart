@@ -8,9 +8,10 @@ import 'help_page.dart';
 class HomePage extends StatefulWidget {
   final AccountManager accountManager;
 
-  const HomePage({Key? key, required this.accountManager}) : super(key: key);
+  const HomePage({super.key, required this.accountManager});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
@@ -29,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   late DateTime monday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
 
   // Generate activity list from Monday to Sunday
-  late List<bool> _weekActivity = List.generate(7, (index) {
+  late final List<bool> _weekActivity = List.generate(7, (index) {
     final DateTime day = monday.add(Duration(days: index));
     return streaks.containsKey(day) && streaks[day]!.isNotEmpty;
   });
@@ -37,7 +38,8 @@ class _HomePageState extends State<HomePage> {
 
   int _calculateStreak(List<bool> activity) {
     int streak = 0;
-    for (int i = activity.length - 1; i >= 0; i--) {
+    int dayIndex = DateTime.now().difference(monday).inDays % 7;
+    for (int i = dayIndex; i >= 0; i--) {
       if (activity[i]) {
         streak++;
       } else {
@@ -76,12 +78,12 @@ class _HomePageState extends State<HomePage> {
         centerTitle: false,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.cover,
             image: AssetImage('assets/images/background.png')),
         ),
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             // ... Your existing widgets ...
@@ -136,141 +138,157 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
             // Modify gesture handler to use _navigateTo:
             GestureDetector(
-              onTap: () => _navigateTo(StreakHistoryPage(accountManager: widget.accountManager)),
-              child: /* your existing streak container */
-              Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: nostalgicColors['cloud'],
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 6,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+              onTap: () => _navigateTo(
+                StreakHistoryPage(accountManager: widget.accountManager),
               ),
-
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-                        .map((d) => Text(
-                              d,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 10),
-                  // Activity dots
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: _weekActivity.map(
-                      (completed) => Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: completed
-                              ? nostalgicColors['grass']
-                              : nostalgicColors['cloud'],
-                          border: !completed ? Border.all(color: Colors.black26) : null,
-                        ),
-                        child: completed
-                            ? Image.asset(
-                              './assets/images/logo.png',
-                              fit: BoxFit.contain,
-                            )
-                            : null,
-                      ),
-                    ).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    currentStreak > 0
-                        ? "🔥 You're on a streak of $currentStreak days this week, keep it up! >>>"
-                        : "Let's continue your streak today! >>>",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                      fontFamily: 'ComicNeue',
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: nostalgicColors['cloud'],
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 6,
+                      offset: Offset(0, 3),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(7, (index) {
+                        final dayDate = monday.add(Duration(days: index));
+                        final isToday = DateTime.now().year == dayDate.year &&
+                                        DateTime.now().month == dayDate.month &&
+                                        DateTime.now().day == dayDate.day;
 
+                        final dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                        final completed = _weekActivity[index];
+
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                          decoration: BoxDecoration(
+                            color: isToday
+                                ? nostalgicColors['sun'] ?? Colors.yellow[200]
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                dayLabels[index],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: completed
+                                      ? nostalgicColors['grass']
+                                      : nostalgicColors['cloud'],
+                                  border: !completed
+                                      ? Border.all(color: Colors.black26)
+                                      : null,
+                                ),
+                                child: completed
+                                    ? ClipOval(
+                                      child: Image.asset(
+                                          './assets/images/logo.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                    )
+                                    : null,
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      currentStreak > 0
+                          ? "🔥 You're on a streak of $currentStreak days this week, keep it up! >>>"
+                          : "Let's continue your streak today! >>>",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                        fontFamily: 'ComicNeue',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
 
             const SizedBox(height: 28),
             
             // Buttons: replace Navigator.push with _navigateTo calls:
-            Row(
-              children: [
-              Expanded(
-                child: _buildFunButton(
-                context,
-                label: '🎯 Start Quiz',
-                color: nostalgicColors['grass']!,
-                onPressed: () {
-                  Navigator.push(
-                  context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizPage(accountManager: widget.accountManager)),
-                  );
-                },
-                ),
-              ),
-              const SizedBox(width: 12),
-              SizedBox(
-                width: 60,
-                height: 60,
-                child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HelpPage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: nostalgicColors['cloud'],
-                  shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 6,
-                  side: const BorderSide(color: Colors.black12),
-                ),
-                child: const Text(
-                  '?',
-                  style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                  ),
-                ),
-                ),
-              ),
-              ],
+            _buildButton(
+              context,
+              label: '🎯 Start Quiz',
+              color: nostalgicColors['grass']!,
+              onPressed: () {
+                _navigateTo(QuizPage(accountManager: widget.accountManager));
+              },
             ),
 
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
-            _buildFunButton(
-              context,
-              label: '🔒 Parental Controls',
-              color: nostalgicColors['berry']!,
-              onPressed: () => _navigateTo(ParentalControlsPage(accountManager: widget.accountManager)),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildButton(
+                    context,
+                    label: '🔒 Parental Controls',
+                    color: nostalgicColors['berry']!,
+                    onPressed: () => _navigateTo(ParentalControlsPage(accountManager: widget.accountManager)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: nostalgicColors['cloud'],
+                    shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 6,
+                    side: const BorderSide(color: Colors.black12),
+                  ),
+                  child: const Text(
+                    '?',
+                    style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    ),
+                  ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -331,7 +349,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFunButton(BuildContext context,
+  Widget _buildButton(BuildContext context,
       {required String label,
       required Color color,
       required VoidCallback onPressed}) {

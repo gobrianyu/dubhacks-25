@@ -4,7 +4,7 @@ import '../models/account_manager.dart';
 class CurfewSettingsPage extends StatefulWidget {
   final AccountManager accountManager;
 
-  const CurfewSettingsPage({Key? key, required this.accountManager}) : super(key: key);
+  const CurfewSettingsPage({super.key, required this.accountManager});
 
   @override
   State<CurfewSettingsPage> createState() => _CurfewSettingsPageState();
