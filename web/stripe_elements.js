@@ -3,85 +3,163 @@ window.stripePayWithCard = async function(publishableKey, clientSecret, callback
     alert("Stripe.js not loaded");
     return;
   }
-  // Create modal overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'stripe-modal-overlay';
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100vw';
-  overlay.style.height = '100vh';
-  overlay.style.background = 'rgba(0,0,0,0.5)';
-  overlay.style.display = 'flex';
-  overlay.style.alignItems = 'center';
-  overlay.style.justifyContent = 'center';
-  overlay.style.zIndex = '9999';
 
-  // Modal content
+  // Remove any existing modal
+  const existingModal = document.getElementById('payment-modal');
+  if (existingModal) {
+    document.body.removeChild(existingModal);
+  }
+
+  // Create modal container
   const modal = document.createElement('div');
-  modal.id = 'stripe-modal-content';
-  modal.style.background = '#fff';
-  modal.style.padding = '32px 24px';
-  modal.style.borderRadius = '12px';
-  modal.style.boxShadow = '0 4px 24px rgba(0,0,0,0.2)';
-  modal.style.minWidth = '360px';
-  modal.style.maxWidth = '90vw';
-  modal.style.minHeight = '220px';
-  modal.style.textAlign = 'center';
-  modal.style.position = 'relative';
+  modal.id = 'payment-modal';
+  modal.style.position = 'fixed';
+  modal.style.left = '0';
+  modal.style.top = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.style.zIndex = '1000';
 
-  // Card element container
-  const cardDiv = document.createElement('div');
-  cardDiv.id = 'card-element';
-  cardDiv.style.margin = '24px 0';
-  cardDiv.style.minHeight = '48px';
+  // Create modal content
+  const modalContent = document.createElement('div');
+  modalContent.style.backgroundColor = 'white';
+  modalContent.style.padding = '32px';
+  modalContent.style.borderRadius = '12px';
+  modalContent.style.width = '400px';
+  modalContent.style.maxWidth = '90%';
+  modalContent.style.position = 'relative';
+  modalContent.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2)';
 
-  // Pay button
-  const payBtn = document.createElement('button');
-  payBtn.id = 'pay-button';
-  payBtn.textContent = 'Pay';
-  payBtn.style.padding = '12px 24px';
-  payBtn.style.fontSize = '18px';
-  payBtn.style.background = '#4caf50';
-  payBtn.style.color = '#fff';
-  payBtn.style.border = 'none';
-  payBtn.style.borderRadius = '6px';
-  payBtn.style.cursor = 'pointer';
-
-  // Close button
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = '×';
-  closeBtn.style.position = 'absolute';
-  closeBtn.style.top = '12px';
-  closeBtn.style.right = '18px';
-  closeBtn.style.background = 'transparent';
-  closeBtn.style.border = 'none';
-  closeBtn.style.fontSize = '28px';
-  closeBtn.style.cursor = 'pointer';
-  closeBtn.onclick = function() {
-    document.body.removeChild(overlay);
-    window[callbackName]({message: 'closed'}, null);
+  // Create close button
+  const closeButton = document.createElement('button');
+  closeButton.innerHTML = '×';
+  closeButton.style.position = 'absolute';
+  closeButton.style.right = '16px';
+  closeButton.style.top = '16px';
+  closeButton.style.border = 'none';
+  closeButton.style.background = 'none';
+  closeButton.style.fontSize = '24px';
+  closeButton.style.cursor = 'pointer';
+  closeButton.style.color = '#666';
+  closeButton.onclick = () => {
+    document.body.removeChild(modal);
+    window[callbackName]({ message: 'Cancelled' }, null);
   };
 
-  modal.appendChild(closeBtn);
-  modal.appendChild(document.createTextNode('Enter your card details:'));
-  modal.appendChild(cardDiv);
-  modal.appendChild(payBtn);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+  // Create title
+  const title = document.createElement('h3');
+  title.textContent = 'Enter Payment Details';
+  title.style.margin = '0 0 24px 0';
+  title.style.fontSize = '20px';
+  title.style.color = '#32325d';
+  title.style.fontFamily = '-apple-system, system-ui, sans-serif';
 
+  // Create card container
+  const cardContainer = document.createElement('div');
+  cardContainer.id = 'card-element';
+  cardContainer.style.padding = '12px';
+  cardContainer.style.border = '1px solid #e0e0e0';
+  cardContainer.style.borderRadius = '8px';
+  cardContainer.style.backgroundColor = '#f8fafd';
+  cardContainer.style.marginBottom = '24px';
+
+  // Create form for the payment
+  const form = document.createElement('form');
+  form.id = 'payment-form';
+  form.style.width = '100%';
+
+  // Create pay button
+  const payButton = document.createElement('button');
+  payButton.textContent = 'Pay';
+  payButton.type = 'submit';
+  payButton.style.width = '100%';
+  payButton.style.padding = '12px';
+  payButton.style.border = 'none';
+  payButton.style.borderRadius = '6px';
+  payButton.style.backgroundColor = '#4caf50';
+  payButton.style.color = 'white';
+  payButton.style.fontSize = '16px';
+  payButton.style.fontWeight = '600';
+  payButton.style.cursor = 'pointer';
+  payButton.style.transition = 'all 0.2s ease';
+
+  payButton.onmouseover = () => {
+    payButton.style.backgroundColor = '#43a047';
+    payButton.style.transform = 'translateY(-1px)';
+  };
+  
+  payButton.onmouseout = () => {
+    payButton.style.backgroundColor = '#4caf50';
+    payButton.style.transform = 'translateY(0)';
+  };
+
+  // Assemble form
+  form.appendChild(cardContainer);
+  form.appendChild(payButton);
+
+  // Assemble modal
+  modalContent.appendChild(closeButton);
+  modalContent.appendChild(title);
+  modalContent.appendChild(form);
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+
+  // Initialize Stripe
   const stripe = window.Stripe(publishableKey);
-  const elements = stripe.elements();
-  const card = elements.create('card');
+  const elements = stripe.elements({
+    appearance: {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#4caf50',
+        fontFamily: '-apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif'
+      }
+    }
+  });
+
+  // Create and mount the card element
+  const card = elements.create('card', {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#424770',
+        '::placeholder': {
+          color: '#aab7c4'
+        },
+        padding: '16px'
+      },
+      invalid: {
+        color: '#dc3545'
+      }
+    }
+  });
+  
   card.mount('#card-element');
 
-  payBtn.onclick = async function() {
-    payBtn.disabled = true;
-    payBtn.textContent = 'Processing...';
+  // Handle form submission
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    payButton.disabled = true;
+    payButton.style.opacity = '0.7';
+    payButton.textContent = 'Processing...';
+
     const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {card: card}
     });
-    document.body.removeChild(overlay);
+
+    document.body.removeChild(modal);
     window[callbackName](error, paymentIntent);
+  });
+
+  // Close modal when clicking outside
+  modal.onclick = (event) => {
+    if (event.target === modal) {
+      document.body.removeChild(modal);
+      window[callbackName]({ message: 'Cancelled' }, null);
+    }
   };
 };

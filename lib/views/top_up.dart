@@ -59,9 +59,6 @@ class _TopUpPageState extends State<TopUpPage> {
 
                   if (tokensBought != null && tokensBought > 0) {
                     widget.accountManager.purchaseTokens(tokensBought);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Added $tokensBought tokens!')),
-                    );
                     setState(() {});
                   }
                 },

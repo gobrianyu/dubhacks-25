@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/payment_service.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:html' as html;
-
 import '../models/account_manager.dart';
 
 class TokenPurchasePage extends StatefulWidget {
@@ -22,35 +19,7 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
   @override
   void initState() {
     super.initState();
-    // Handle Stripe Checkout return on web: look for success params
-    if (kIsWeb) {
-      final uri = Uri.parse(html.window.location.href);
-      final success = uri.queryParameters['success'];
-      final tokensStr = uri.queryParameters['tokens'];
-      if (success == '1' && tokensStr != null) {
-        final tokens = int.tryParse(tokensStr);
-        if (tokens != null && tokens > 0) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            // Credit tokens directly if accountManager is provided
-            if (widget.accountManager != null) {
-              widget.accountManager!.purchaseTokens(tokens);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Added $tokens tokens!')),
-              );
-            }
-            Navigator.of(context).pop(tokens);
-            _removeQueryParams();
-          });
-        }
-      }
-    }
-  }
-
-  void _removeQueryParams() {
-    if (!kIsWeb) return;
-    final uri = Uri.parse(html.window.location.href);
-    final cleared = uri.replace(queryParameters: {});
-    html.window.history.replaceState(null, '', cleared.toString());
+    // Since we're using the modal payment flow, we don't need to handle URL parameters anymore
   }
 
   Future<void> _handlePayment() async {
@@ -62,7 +31,6 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
     try {
       final success = await _payment.pay(tokenCount: _tokensToBuy);
       if (success) {
-        widget.accountManager?.purchaseTokens(_tokensToBuy);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Payment successful! You bought $_tokensToBuy tokens.')),
         );

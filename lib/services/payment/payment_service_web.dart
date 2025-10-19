@@ -2,8 +2,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:js' as js;
-import 'dart:html' as html;
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,10 +10,7 @@ import 'payment_service_base.dart';
 Future<bool> showStripeCardForm(String publishableKey, String clientSecret) async {
   final completer = Completer<bool>();
 
-  html.document.body!.appendHtml('''
-    <div id="card-element" style="margin:24px 0;"></div>
-    <button id="pay-button" style="padding:12px 24px;font-size:18px;">Pay</button>
-  ''');
+  // The card element will be handled by stripe_elements.js
 
   js.context['onStripePaymentResult'] = (error, paymentIntent) {
     if (error != null) {
@@ -23,8 +18,7 @@ Future<bool> showStripeCardForm(String publishableKey, String clientSecret) asyn
     } else {
       completer.complete(true);
     }
-    html.document.getElementById('card-element')?.remove();
-    html.document.getElementById('pay-button')?.remove();
+    // Elements cleanup is handled by stripe_elements.js
   };
 
   js.context.callMethod('stripePayWithCard', [publishableKey, clientSecret, 'onStripePaymentResult']);
