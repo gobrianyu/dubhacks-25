@@ -43,7 +43,7 @@ class _QuizPageState extends State<QuizPage> {
     'berry': Color(0xFFF48FB1),
     'cloud': Color(0xFFFFFFFF),
   };
-
+  final String ipv4 = '10.18.60.85';
   bool quizStarted = false;
   bool loadingFirstQuestion = true;
   int currentQuestionIndex = 0;
@@ -77,7 +77,7 @@ class _QuizPageState extends State<QuizPage> {
     for (int i = 0; i < numQuestions; i++) {
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.83.32:8080/generateQuestion'),
+          Uri.parse('http://$ipv4:8080/generateQuestion'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
             'topic': 'Basic Algebra',
@@ -134,7 +134,7 @@ class _QuizPageState extends State<QuizPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.83.32:8080/checkAnswer'),
+        Uri.parse('http://$ipv4:8080/checkAnswer'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'questionId': question.id,
@@ -200,7 +200,12 @@ class _QuizPageState extends State<QuizPage> {
                     TextStyle(fontFamily: 'ComicNeue', fontWeight: FontWeight.bold),
               ),
             ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('assets/images/background.png')),
+        ),
         padding: const EdgeInsets.all(16),
         child: _buildBody(context),
       ),

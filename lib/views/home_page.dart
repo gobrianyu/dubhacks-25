@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        title: const Text('Math Kids'),
+        title: const Text('Brain Bloom'),
         backgroundColor: nostalgicColors['sun'],
         centerTitle: false,
       ),

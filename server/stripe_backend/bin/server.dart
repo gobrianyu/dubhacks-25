@@ -315,11 +315,17 @@ app.post('/generateQuestion', (Request req) async {
           'email': '${cardholderName.replaceAll(' ', '.').toLowerCase()}@example.com',
           'status': 'active',
           'type': 'individual',
+          'first_name': 'Test',
+          'last_name': 'User',
+          'dob[day]': '1',
+          'dob[month]': '1',
+          'dob[year]': '2004',
           'billing[address][line1]': '123 Test Street',
           'billing[address][city]': 'Test City',
           'billing[address][state]': 'CA',
           'billing[address][postal_code]': '94107',
           'billing[address][country]': 'US',
+          'tax_id': '000000000',
         },
       );
 
@@ -368,7 +374,7 @@ app.post('/generateQuestion', (Request req) async {
     }
   });
 
-  // POST /redeem-prepaid-card
+  // POST /redeem-prepaid-card (Test Mode)
   app.post('/redeem-prepaid-card', (Request req) async {
     if (secretKey == null) {
       return jsonResponse({'error': 'Missing Stripe secret key'}, status: 500);
@@ -384,7 +390,7 @@ app.post('/generateQuestion', (Request req) async {
     }
 
     try {
-      // 1️⃣ Create a cardholder (individual)
+      // 1️⃣ Create a cardholder (active in test mode)
       final cardholderResp = await http.post(
         Uri.parse('https://api.stripe.com/v1/issuing/cardholders'),
         headers: {
@@ -394,20 +400,14 @@ app.post('/generateQuestion', (Request req) async {
         body: {
           'name': userName,
           'email': email,
+          'phone_number': "2067518494",
           'type': 'individual',
           'billing[address][line1]': '123 Test Street',
           'billing[address][city]': 'Testville',
           'billing[address][state]': 'CA',
           'billing[address][postal_code]': '12345',
           'billing[address][country]': 'US',
-          'individual[dob][day]': '1',
-          'individual[dob][month]': '1',
-          'individual[dob][year]': '2000',
-          'individual[address][line1]': '123 Test Street',
-          'individual[address][city]': 'Testville',
-          'individual[address][state]': 'CA',
-          'individual[address][postal_code]': '12345',
-          'individual[address][country]': 'US',
+          'status': 'active', // ✅ only 'active' or 'inactive' allowed
         },
       );
 
@@ -420,7 +420,7 @@ app.post('/generateQuestion', (Request req) async {
       final cardholderData = json.decode(cardholderResp.body);
       final String cardholderId = cardholderData['id'];
 
-      // 2️⃣ Issue a virtual card
+      // 2️⃣ Issue a virtual card in active status
       final cardResp = await http.post(
         Uri.parse('https://api.stripe.com/v1/issuing/cards'),
         headers: {
@@ -431,6 +431,7 @@ app.post('/generateQuestion', (Request req) async {
           'cardholder': cardholderId,
           'currency': 'usd',
           'type': 'virtual',
+          'status': 'active',
         },
       );
 
@@ -441,38 +442,29 @@ app.post('/generateQuestion', (Request req) async {
       }
 
       final cardData = json.decode(cardResp.body);
-      final String cardId = cardData['id'];
 
-      // 3️⃣ Fund the card with the requested amount (create a balance transaction)
-      final fundResp = await http.post(
-        Uri.parse('https://api.stripe.com/v1/issuing/authorizations'),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $secretKey',
-          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
-        },
-        body: {
-          'card': cardId,
-          'amount': amount.toString(),
-          'currency': 'usd',
-          'merchant_data[name]': 'Token Funding',
-          'pending': 'false',
-        },
-      );
-
-      if (fundResp.statusCode != 200) {
-        return Response(fundResp.statusCode,
-            body: fundResp.body,
-            headers: {'content-type': 'application/json'});
-      }
+      // 3️⃣ Simulate funding in test mode (do not call authorizations)
+      final fundingData = {
+        'amount': amount,
+        'currency': 'usd',
+        'status': 'funded (test mode)',
+      };
 
       return jsonResponse({
-        'card': cardData,
-        'funding': json.decode(fundResp.body),
+        'success': true,
+        'card_id': cardData['id'],
+        'last4': cardData['last4'],
+        'exp_month': cardData['exp_month'],
+        'exp_year': cardData['exp_year'],
+        'type': cardData['type'],
+        'status': cardData['status'], // active
+        'funding': fundingData,
       });
     } catch (e) {
       return jsonResponse({'error': e.toString()}, status: 500);
     }
   });
+
 
 
 

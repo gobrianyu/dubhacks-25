@@ -18,6 +18,7 @@ class _RedeemCardPageState extends State<RedeemCardPage> {
   bool isLoading = false;
   String feedbackText = '';
   Map<String, dynamic>? cardInfo;
+  final String ipv4 = '10.18.60.85';
 
   Future<void> _redeemCard() async {
     final maxAmount = widget.accountManager.balance.tokenBalance + 100; // assume in cents or tokens
@@ -37,7 +38,7 @@ class _RedeemCardPageState extends State<RedeemCardPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.83.32:8080/redeem-prepaid-card'),
+        Uri.parse('http://$ipv4:8080/redeem-prepaid-card'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'name': widget.accountManager.username,

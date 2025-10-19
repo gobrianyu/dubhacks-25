@@ -11,6 +11,7 @@ class TokenPurchasePage extends StatefulWidget {
 }
 
 class _TokenPurchasePageState extends State<TokenPurchasePage> {
+  String ipv4 = '10.18.60.85';
   int _tokensToBuy = 1;
   bool _isLoading = false;
   String? _errorMessage;
@@ -23,7 +24,7 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
 
     try {
       // 1. Create PaymentIntent on backend
-      final url = Uri.parse('http://10.0.83.32:8080/create-payment-intent');
+      final url = Uri.parse('http://$ipv4:8080/create-payment-intent');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -95,8 +96,14 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buy Tokens'),
+        title: const Text('Buy Tokens', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Color.fromARGB(255, 78, 101, 112),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -147,6 +154,7 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
                 ),
               ),
             ),
+            SizedBox(height: 40)
           ],
         ),
       ),
