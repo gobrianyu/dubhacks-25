@@ -1,0 +1,14 @@
+﻿{
+  "model": "gemini-2.0-flash",
+  "defaultDifficulty": "easy",
+  "batches": [
+    { "gradeBand": "3-5", "topic": "addition and subtraction", "type": "open", "count": 8, "difficulty": "easy" },
+    { "gradeBand": "3-5", "topic": "fractions (like halves/quarters)", "type": "mcq", "count": 8, "difficulty": "easy" },
+    { "gradeBand": "6-8", "topic": "fractions and equivalence", "type": "mcq", "count": 10, "difficulty": "easy" },
+    { "gradeBand": "6-8", "topic": "percentages and discounts", "type": "mcq", "count": 10, "difficulty": "medium" },
+    { "gradeBand": "6-8", "topic": "ratios and proportions", "type": "open", "count": 8, "difficulty": "medium" },
+    { "gradeBand": "9-10", "topic": "linear equations (solve for x)", "type": "open", "count": 10, "difficulty": "medium" },
+    { "gradeBand": "9-10", "topic": "systems of equations (substitution/elimination)", "type": "mcq", "count": 8, "difficulty": "medium" },
+    { "gradeBand": "9-10", "topic": "quadratic equations (factoring)", "type": "open", "count": 8, "difficulty": "hard" }
+  ]
+}

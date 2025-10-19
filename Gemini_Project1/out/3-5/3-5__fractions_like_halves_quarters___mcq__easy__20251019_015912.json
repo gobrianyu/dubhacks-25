@@ -1,0 +1,108 @@
+﻿```json
+[
+  {
+    "id": "fraction-3-5-1",
+    "prompt": "Lily ate 1/4 of a pizza, and Tom ate 2/4 of the same pizza. How much of the pizza did they eat together?",
+    "type": "mcq",
+    "options": {
+      "A": "1/4",
+      "B": "2/4",
+      "C": "3/4",
+      "D": "4/4"
+    },
+    "answer": "C",
+    "explanation": "To solve this, we need to add the fractions 1/4 and 2/4. Both fractions have the same denominator (4), which means we can simply add the numerators (the top numbers). 1 plus 2 equals 3. So, 1/4 + 2/4 = 3/4. Therefore, Lily and Tom ate 3/4 of the pizza together."
+  },
+  {
+    "id": "fraction-3-5-2",
+    "prompt": "Which fraction is bigger: 1/2 or 1/4?",
+    "type": "mcq",
+    "options": {
+      "A": "1/2",
+      "B": "1/4",
+      "C": "They are the same",
+      "D": "Cannot tell"
+    },
+    "answer": "A",
+    "explanation": "Imagine you have a chocolate bar. If you cut it in half (1/2), you get a bigger piece than if you cut it into four equal pieces (1/4).  The smaller the number on the bottom of a fraction (the denominator), the bigger each piece is if the top number is the same. Therefore, 1/2 is bigger than 1/4."
+  },
+  {
+    "id": "fraction-3-5-3",
+    "prompt": "What is 1/2 of 10?",
+    "type": "mcq",
+    "options": {
+      "A": "2",
+      "B": "5",
+      "C": "10",
+      "D": "20"
+    },
+    "answer": "B",
+    "explanation": "Finding one-half of a number is the same as dividing that number by 2.  We are trying to find what number is half of 10. So, we divide 10 by 2. 10 divided by 2 is 5. Therefore, 1/2 of 10 is 5."
+  },
+  {
+    "id": "fraction-3-5-4",
+    "prompt": "Sarah has 8 cookies. She gives 1/4 of them to her friend. How many cookies did she give away?",
+    "type": "mcq",
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "4"
+    },
+    "answer": "B",
+    "explanation": "To find 1/4 of 8, we need to divide 8 into four equal groups. This is the same as dividing 8 by 4.  8 divided by 4 is 2. Therefore, Sarah gave away 2 cookies."
+  },
+  {
+    "id": "fraction-3-5-5",
+    "prompt": "Which picture shows 1/2 shaded?",
+    "type": "mcq",
+    "options": {
+      "A": "A square with one of four sections shaded",
+      "B": "A circle with two of four sections shaded",
+      "C": "A rectangle with 3 of 4 sections shaded",
+      "D": "A triangle with 1 of 3 sections shaded"
+    },
+    "answer": "B",
+    "explanation": "One-half means one out of two equal parts, or 50%. 'A' and 'C' do not represent one half. 'B' has 2 of 4 sections shaded, which equals one half (2/4 = 1/2). 'D' has 1 of 3 sections shaded which does not equal one half. Thus, option 'B' is correct."
+  },
+  {
+    "id": "fraction-3-5-6",
+    "prompt": "Mark has a chocolate bar divided into 4 equal parts. He eats one part. What fraction of the chocolate bar did he eat?",
+    "type": "mcq",
+    "options": {
+      "A": "1/2",
+      "B": "1/3",
+      "C": "1/4",
+      "D": "3/4"
+    },
+    "answer": "C",
+    "explanation": "The chocolate bar is divided into 4 equal parts, which means the denominator of the fraction will be 4. Mark eats 1 of those parts, which means the numerator of the fraction will be 1.  Therefore, Mark ate 1/4 of the chocolate bar."
+  },
+  {
+    "id": "fraction-3-5-7",
+    "prompt": "Is 2/2 equal to 1?",
+    "type": "mcq",
+    "options": {
+      "A": "Yes",
+      "B": "No",
+      "C": "Sometimes",
+      "D": "Only with circles"
+    },
+    "answer": "A",
+    "explanation": "A fraction represents a part of a whole.  If the numerator (top number) and the denominator (bottom number) are the same, it means you have all the parts that make up the whole. In this case, 2/2 means you have 2 out of 2 parts, which is the entire whole thing. Therefore, 2/2 is equal to 1."
+  },
+  {
+    "id": "fraction-3-5-8",
+    "prompt": "Which of the following is equivalent to one half?",
+    "type": "mcq",
+    "options": {
+      "A": "1/4",
+      "B": "2/4",
+      "C": "3/4",
+      "D": "4/4"
+    },
+    "answer": "B",
+    "explanation": "Equivalent fractions are fractions that represent the same value, even though they have different numerators and denominators. We need to find which fraction is equal to 1/2. If we multiply both the numerator and denominator of 1/2 by 2, we get 2/4. Therefore, 2/4 is equivalent to 1/2."
+  }
+]
+```

@@ -1,0 +1,60 @@
+﻿```json
+[
+  {
+    "id": "qe-fact-9-10-1",
+    "prompt": "Solve for x by factoring: 3x² + 10x - 8 = 0",
+    "type": "open",
+    "answer": "x = -4, x = 2/3",
+    "explanation": "To solve the quadratic equation 3x² + 10x - 8 = 0 by factoring, we first need to find two numbers that multiply to (3)(-8) = -24 and add up to 10. These numbers are 12 and -2. Then, we rewrite the middle term as 12x - 2x, so the equation becomes 3x² + 12x - 2x - 8 = 0. Now, we factor by grouping: 3x(x + 4) - 2(x + 4) = 0. This gives us (3x - 2)(x + 4) = 0. Setting each factor equal to zero, we have 3x - 2 = 0 and x + 4 = 0. Solving for x, we get x = 2/3 and x = -4. Therefore, the solutions to the quadratic equation are x = -4 and x = 2/3. Always check your answer by plugging in the x values into the original equation."
+  },
+  {
+    "id": "qe-fact-9-10-2",
+    "prompt": "Factor and solve for x: 4x² - 25 = 0",
+    "type": "open",
+    "answer": "x = 5/2, x = -5/2",
+    "explanation": "The quadratic equation 4x² - 25 = 0 is a difference of squares. We can factor it as (2x - 5)(2x + 5) = 0. Setting each factor equal to zero, we get 2x - 5 = 0 and 2x + 5 = 0. Solving for x in each equation, we find 2x = 5 and 2x = -5, which gives us x = 5/2 and x = -5/2. Therefore, the solutions to the quadratic equation are x = 5/2 and x = -5/2. Remember, the difference of squares pattern is a powerful factoring tool. Always verify solutions in the original equation."
+  },
+  {
+    "id": "qe-fact-9-10-3",
+    "prompt": "Solve for x: x² + 6x + 9 = 0",
+    "type": "open",
+    "answer": "x = -3",
+    "explanation": "The quadratic equation x² + 6x + 9 = 0 is a perfect square trinomial. It can be factored as (x + 3)(x + 3) = 0, which is equivalent to (x + 3)² = 0. To solve for x, we take the square root of both sides: √(x + 3)² = √0, which gives us x + 3 = 0. Solving for x, we find x = -3. Therefore, the only solution to the quadratic equation is x = -3. A perfect square trinomial always yields one distinct solution. Ensure to substitute the answer back into the original equation to double-check."
+  },
+  {
+    "id": "qe-fact-9-10-4",
+    "prompt": "Factor the quadratic expression completely: 6x² - 5x - 4",
+    "type": "open",
+    "answer": "(3x - 4)(2x + 1)",
+    "explanation": "To factor the quadratic expression 6x² - 5x - 4, we look for two numbers that multiply to (6)(-4) = -24 and add up to -5. These numbers are -8 and 3. Rewriting the middle term, we have 6x² - 8x + 3x - 4. Factoring by grouping gives us 2x(3x - 4) + 1(3x - 4). Therefore, the factored form of the quadratic expression is (3x - 4)(2x + 1). Factoring by grouping is essential for complex quadratic expressions. You can always double-check by expanding the product and verifying if it is identical to the original."
+  },
+  {
+    "id": "qe-fact-9-10-5",
+    "prompt": "Solve for x by factoring: 2x² - 7x + 6 = 0",
+    "type": "open",
+    "answer": "x = 2, x = 3/2",
+    "explanation": "To solve the quadratic equation 2x² - 7x + 6 = 0 by factoring, we need to find two numbers that multiply to (2)(6) = 12 and add up to -7. These numbers are -4 and -3. We can rewrite the middle term as -4x - 3x, so the equation becomes 2x² - 4x - 3x + 6 = 0. Now, we factor by grouping: 2x(x - 2) - 3(x - 2) = 0. This gives us (2x - 3)(x - 2) = 0. Setting each factor equal to zero, we have 2x - 3 = 0 and x - 2 = 0. Solving for x, we get x = 3/2 and x = 2. Therefore, the solutions to the quadratic equation are x = 3/2 and x = 2. It is always good practice to check if the numbers we find are correct."
+  },
+  {
+    "id": "qe-fact-9-10-6",
+    "prompt": "Factor completely and solve for x: 9x² + 30x + 25 = 0",
+    "type": "open",
+    "answer": "x = -5/3",
+    "explanation": "The quadratic expression 9x² + 30x + 25 is a perfect square trinomial. It can be factored as (3x + 5)(3x + 5) = 0, which is equivalent to (3x + 5)² = 0. To solve for x, we take the square root of both sides: √(3x + 5)² = √0, which gives us 3x + 5 = 0. Solving for x, we find 3x = -5, and therefore x = -5/3. Therefore, the only solution to the quadratic equation is x = -5/3. Double-check by plugging in the answer into the original equation."
+  },
+  {
+    "id": "qe-fact-9-10-7",
+    "prompt": "Factor and solve for x: x² - 8x = 0",
+    "type": "open",
+    "answer": "x = 0, x = 8",
+    "explanation": "To solve the quadratic equation x² - 8x = 0 by factoring, we first factor out the common factor of x: x(x - 8) = 0. Then, we set each factor equal to zero, which gives us x = 0 and x - 8 = 0. Solving for x in the second equation, we find x = 8. Therefore, the solutions to the quadratic equation are x = 0 and x = 8. Factoring out the greatest common factor is the essential first step. Verify your solution by plugging in the found x-values into the original equation."
+  },
+  {
+    "id": "qe-fact-9-10-8",
+    "prompt": "Factor completely: 12x² + 17x + 6",
+    "type": "open",
+    "answer": "(4x + 3)(3x + 2)",
+    "explanation": "To factor the quadratic expression 12x² + 17x + 6, we need to find two numbers that multiply to (12)(6) = 72 and add up to 17. These numbers are 8 and 9. Rewrite the middle term using these numbers: 12x² + 8x + 9x + 6. Now, factor by grouping: 4x(3x + 2) + 3(3x + 2). This gives us the factored form (4x + 3)(3x + 2). Therefore, the complete factorization of 12x² + 17x + 6 is (4x + 3)(3x + 2). Factoring requires strategic thinking to determine the numbers. Substitute the values found in your equations to verify that the final answer makes sense."
+  }
+]
+```

@@ -1,0 +1,134 @@
+﻿```json
+[
+  {
+    "id": "PD1",
+    "prompt": "A store is having a 20% off sale on all items. If a shirt originally costs $25, what will be the sale price?",
+    "type": "mcq",
+    "options": {
+      "A": "$5",
+      "B": "$20",
+      "C": "$30",
+      "D": "$22.50"
+    },
+    "answer": "B",
+    "explanation": "First, calculate the discount amount by multiplying the original price by the discount percentage (20%).  20% of $25 is (20/100) * $25 = $5. Next, subtract the discount amount ($5) from the original price ($25) to find the sale price. Therefore, the sale price will be $25 - $5 = $20. The correct answer is $20 which is option B. Remember that the discount reduces the original price, so it is important to subtract the discount from the original price to find the final sale price."
+  },
+  {
+    "id": "PD2",
+    "prompt": "Sarah wants to buy a video game that costs $60. She has a coupon for 15% off. How much will the video game cost after the discount?",
+    "type": "mcq",
+    "options": {
+      "A": "$9",
+      "B": "$51",
+      "C": "$69",
+      "D": "$45"
+    },
+    "answer": "B",
+    "explanation": "First, calculate the amount of the discount by converting 15% to a decimal (0.15) and multiplying it by the original price. 0.15 * $60 = $9. Then, subtract the discount amount ($9) from the original price ($60) to find the sale price. $60 - $9 = $51. So, the final price of the video game will be $51. Therefore, the correct answer is $51 which is option B. Always subtract a discount from the original price."
+  },
+  {
+    "id": "PD3",
+    "prompt": "A shop owner buys an item for $40 and wants to mark it up by 30% to sell. What will be the selling price of the item?",
+    "type": "mcq",
+    "options": {
+      "A": "$12",
+      "B": "$52",
+      "C": "$70",
+      "D": "$40"
+    },
+    "answer": "B",
+    "explanation": "First, find the markup amount by multiplying the original cost by the markup percentage. 30% of $40 is (30/100) * $40 = $12. Then, add the markup amount ($12) to the original cost ($40) to get the selling price. So, the selling price will be $40 + $12 = $52. Therefore, the selling price will be $52 which is option B. Remember that the markup adds onto the original cost to find the selling price."
+  },
+  {
+    "id": "PD4",
+    "prompt": "Tom buys a jacket for $80, and there is a 10% sales tax. What is the total cost of the jacket, including tax?",
+    "type": "mcq",
+    "options": {
+      "A": "$8",
+      "B": "$72",
+      "C": "$88",
+      "D": "$90"
+    },
+    "answer": "C",
+    "explanation": "First, calculate the sales tax amount by multiplying the jacket price by the tax percentage. 10% of $80 is (10/100) * $80 = $8.  Then, add the sales tax amount ($8) to the original price ($80) to find the total cost. Therefore, the total cost of the jacket including tax is $80 + $8 = $88.  The correct answer is $88 which is option C. Remember sales tax is added to the original price."
+  },
+  {
+    "id": "PD5",
+    "prompt": "A store is offering a 'Buy One Get One 50% Off' deal on shoes. If a pair of shoes costs $70, how much will it cost to buy two pairs?",
+    "type": "mcq",
+    "options": {
+      "A": "$105",
+      "B": "$35",
+      "C": "$70",
+      "D": "$140"
+    },
+    "answer": "A",
+    "explanation": "The first pair of shoes costs $70. The second pair is 50% off, so the discount is 50% of $70 which is (50/100) * $70 = $35. The price of the second pair is $70 - $35 = $35. The total cost for two pairs is $70 + $35 = $105. Therefore, buying two pairs will cost $105 which is option A. Take your time calculating discounts and adding to final prices."
+  },
+  {
+    "id": "PD6",
+    "prompt": "If you save 25% on an item that costs $120, how much money did you save?",
+    "type": "mcq",
+    "options": {
+      "A": "$25",
+      "B": "$30",
+      "C": "$90",
+      "D": "$95"
+    },
+    "answer": "B",
+    "explanation": "To find how much money you saved, calculate 25% of $120. Convert 25% to a decimal by dividing by 100, so 25/100 = 0.25. Multiply the original price by the decimal: $120 * 0.25 = $30. Therefore, you saved $30. The correct answer is $30 which is option B. Ensure to convert percentages to decimals for easy computation."
+  },
+  {
+    "id": "PD7",
+    "prompt": "A laptop is priced at $800. It's on sale for 15% off. What is the sale price?",
+    "type": "mcq",
+    "options": {
+      "A": "$120",
+      "B": "$680",
+      "C": "$785",
+      "D": "$920"
+    },
+    "answer": "B",
+    "explanation": "First, calculate the discount by finding 15% of $800. Convert 15% to a decimal by dividing by 100: 15/100 = 0.15. Now multiply: $800 * 0.15 = $120.  This is the amount of the discount. To find the sale price, subtract the discount ($120) from the original price ($800): $800 - $120 = $680. The sale price is $680. Therefore, the correct answer is $680 which is option B."
+  },
+  {
+    "id": "PD8",
+    "prompt": "A restaurant bill is $45, and you want to leave a 20% tip. How much tip should you leave?",
+    "type": "mcq",
+    "options": {
+      "A": "$4.50",
+      "B": "$9",
+      "C": "$2.25",
+      "D": "$65"
+    },
+    "answer": "B",
+    "explanation": "To calculate the tip amount, find 20% of $45.  Convert 20% to a decimal by dividing by 100: 20/100 = 0.20. Multiply the bill amount by the decimal: $45 * 0.20 = $9. Therefore, you should leave a tip of $9. The correct answer is $9 which is option B. Always calculate tips based on the pre-tax bill amount."
+  },
+  {
+    "id": "PD9",
+    "prompt": "John bought a toy for $30 after a discount of 25%. What was the original price of the toy?",
+    "type": "mcq",
+    "options": {
+      "A": "$37.50",
+      "B": "$40",
+      "C": "$22.50",
+      "D": "$39"
+    },
+    "answer": "B",
+    "explanation": "If the toy costs $30 after a 25% discount, it means $30 represents 75% of the original price (100% - 25% = 75%). Let 'x' be the original price.  We can set up the equation: 0.75x = $30.  To find 'x', divide both sides of the equation by 0.75: x = $30 / 0.75 = $40. Therefore, the original price of the toy was $40. The correct answer is $40 which is option B. Set up an equation and use algebra to solve for the original price."
+  },
+  {
+    "id": "PD10",
+    "prompt": "A store marks up its items by 40%. If an item costs the store $50, what price will the store sell it for?",
+    "type": "mcq",
+    "options": {
+      "A": "$20",
+      "B": "$30",
+      "C": "$70",
+      "D": "$90"
+    },
+    "answer": "C",
+    "explanation": "First, calculate the markup amount by finding 40% of $50. Convert 40% to a decimal: 40/100 = 0.40. Multiply: $50 * 0.40 = $20. The markup amount is $20.  To find the selling price, add the markup amount to the original cost: $50 + $20 = $70. Therefore, the store will sell the item for $70. The correct answer is $70 which is option C. Add the markup amount to the original cost."
+  }
+]
+```

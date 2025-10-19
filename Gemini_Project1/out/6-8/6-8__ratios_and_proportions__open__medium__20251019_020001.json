@@ -1,0 +1,66 @@
+﻿```json
+[
+  {
+    "id": "RP-001",
+    "prompt": "A recipe for cookies calls for 2 cups of flour and 1 cup of sugar. If you want to make a bigger batch using 6 cups of flour, how many cups of sugar will you need?",
+    "type": "open",
+    "answer": "3",
+    "explanation": "The ratio of flour to sugar is 2:1. This means for every 2 cups of flour, we need 1 cup of sugar. To find out how much sugar we need for 6 cups of flour, we can set up a proportion: 2/1 = 6/x.  To solve for x, we can cross-multiply: 2 * x = 1 * 6. This simplifies to 2x = 6. Dividing both sides by 2, we get x = 3.  Therefore, you will need 3 cups of sugar. We increased the flour by a factor of 3 (since 2 * 3 = 6), so we must increase the sugar by the same factor to maintain the correct ratio. Thus the answer is 3 cups of sugar."
+  },
+  {
+    "id": "RP-002",
+    "prompt": "A map has a scale of 1 inch = 25 miles. If two cities are 4 inches apart on the map, what is the actual distance between the cities in miles?",
+    "type": "open",
+    "answer": "100",
+    "explanation": "The scale tells us that 1 inch on the map represents 25 miles in real life. We know that the two cities are 4 inches apart on the map.  To find the actual distance, we can multiply the distance on the map by the scale factor. So, we multiply 4 inches by 25 miles/inch: 4 * 25 = 100.  Therefore, the actual distance between the cities is 100 miles. Essentially, each inch represents 25 miles, and we have 4 of those inches, so we add 25 four times (25+25+25+25) which equals 100."
+  },
+  {
+    "id": "RP-003",
+    "prompt": "Which of the following ratios is proportional to 3:5?",
+    "type": "mcq",
+    "options": {
+      "A": "5:3",
+      "B": "6:10",
+      "C": "9:25",
+      "D": "15:2"
+    },
+    "answer": "B",
+    "explanation": "A proportion is an equation stating that two ratios are equal. To determine if a ratio is proportional to 3:5, we need to check if it can be simplified or multiplied to get 3:5. Let's examine each option: A) 5:3 is simply the reverse of 3:5, not proportional. B) 6:10 can be simplified by dividing both sides by 2, resulting in 3:5. C) 9:25 cannot be simplified to 3:5. D) 15:2 cannot be simplified to 3:5. Therefore, the correct answer is B, because 6:10 is equivalent to 3:5."
+  },
+  {
+    "id": "RP-004",
+    "prompt": "Sarah can type 90 words in 3 minutes. How many words can she type in 5 minutes at the same rate?",
+    "type": "open",
+    "answer": "150",
+    "explanation": "First, we need to find Sarah's typing rate per minute. We can do this by dividing the number of words typed by the number of minutes: 90 words / 3 minutes = 30 words per minute. Now that we know her rate, we can calculate how many words she can type in 5 minutes. We multiply her typing rate by the number of minutes: 30 words/minute * 5 minutes = 150 words. Therefore, Sarah can type 150 words in 5 minutes. So each minute, Sarah types 30 words, and in five minutes, she can type 30 x 5, which equals 150 words."
+  },
+  {
+    "id": "RP-005",
+    "prompt": "A store sells apples at a price of 3 apples for $2. How much would 9 apples cost?",
+    "type": "open",
+    "answer": "6",
+    "explanation": "We are given that 3 apples cost $2.  We want to find the cost of 9 apples. We notice that 9 is 3 times 3 (9 = 3 * 3). Therefore, the cost of 9 apples will be 3 times the cost of 3 apples.  So, the cost of 9 apples is 3 * $2 = $6. The proportional relationship can be expressed as a fraction 3/2 = 9/x where x is the cost of 9 apples. Cross multiplying gives 3x=18, so x=6."
+  },
+  {
+    "id": "RP-006",
+    "prompt": "If 4 notebooks cost $12, how much will 7 notebooks cost?",
+    "type": "open",
+    "answer": "21",
+    "explanation": "First, find the cost of one notebook. Divide the total cost ($12) by the number of notebooks (4): $12 / 4 notebooks = $3 per notebook. Now, multiply the cost per notebook ($3) by the number of notebooks you want to buy (7): $3/notebook * 7 notebooks = $21. Therefore, 7 notebooks will cost $21. Each notebook costs $3, so to buy 7 notebooks, you will need $3 x 7 which equals $21."
+  },
+  {
+    "id": "RP-007",
+    "prompt": "The ratio of boys to girls in a class is 2:3. If there are 12 girls, how many boys are there?",
+    "type": "open",
+    "answer": "8",
+    "explanation": "The ratio of boys to girls is 2:3, meaning for every 3 girls, there are 2 boys. We know there are 12 girls.  We need to figure out what number we multiplied 3 by to get 12.  3 * 4 = 12.  Since we multiplied the number of girls by 4, we also need to multiply the number of boys in the ratio by 4. So, 2 * 4 = 8. Therefore, there are 8 boys in the class. In simpler terms, each 'part' of the ratio is worth 4 students (12 girls / 3 ratio parts = 4 students per part), which means there are 2*4=8 boys."
+  },
+  {
+    "id": "RP-008",
+    "prompt": "A small model car is built to a scale of 1:18. If the actual car is 144 inches long, how long is the model car in inches?",
+    "type": "open",
+    "answer": "8",
+    "explanation": "The scale 1:18 means that 1 inch on the model represents 18 inches on the actual car. To find the length of the model car, we need to divide the actual car's length by the scale factor.  So, we divide 144 inches (actual car length) by 18 (scale factor): 144 / 18 = 8.  Therefore, the model car is 8 inches long. In other words, the real car is 18 times bigger than the model car, so we divide the real car length by 18 to get the model length."
+  }
+]
+```
