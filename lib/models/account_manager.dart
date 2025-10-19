@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 import 'balance_manager.dart';
 
@@ -33,15 +35,24 @@ class AccountManager {
   int get numQuestionsPerQuiz => _numQuestionsPerQuiz;
 
   set childAge(int age) {
-    if (age > 0) _childAge = age;
+    if (age > 0) {
+      _childAge = age;
+      saveToPreferences(); // Auto-save
+    }
   }
 
   set requiredQuizScore(int score) {
-    if (score >= 0 && score <= 100) _requiredQuizScore = score;
+    if (score >= 0 && score <= 100) {
+      _requiredQuizScore = score;
+      saveToPreferences(); // Auto-save
+    }
   }
 
   set numQuestionsPerQuiz(int num) {
-    if (num > 0) _numQuestionsPerQuiz = num;
+    if (num > 0) {
+      _numQuestionsPerQuiz = num;
+      saveToPreferences(); // Auto-save
+    }
   }
 
 
@@ -49,6 +60,7 @@ class AccountManager {
     _balance.addTokens(amount);
     logEvent('Parent purchased $amount tokens');
     _recordTopUp(amount);
+    saveToPreferences(); // Auto-save after purchase
   }
 
   void _recordTopUp(int amount) {
@@ -63,6 +75,7 @@ class AccountManager {
   void setCurfew(TimeOfDay start, TimeOfDay end) {
     _curfewStart = start;
     _curfewEnd = end;
+    saveToPreferences(); // Auto-save after setting curfew
   }
 
 
@@ -144,15 +157,98 @@ class AccountManager {
     _tokensEarned += amount;
     _balance.earnTokens(amount);
     logEvent('Earned $amount tokens');
+    saveToPreferences(); // Auto-save after earning tokens
   }
 
   Map<String, dynamic> toJson() => {
     'userId': _userId,
     'username': _username,
+    'password': _password,
     'userLevel': _userLevel,
     'tokensEarned': _tokensEarned,
+    'questionsAnswered': _questionsAnswered,
     'balance': _balance.toJson(),
     'history': _history,
-    'streakHistory': streakHistory.map((k, v) => MapEntry(k.toIso8601String(), v)),
+    'streakHistory': _streakHistory.map((k, v) => MapEntry(k.toIso8601String(), v)),
+    'curfewStart': '${_curfewStart.hour}:${_curfewStart.minute}',
+    'curfewEnd': '${_curfewEnd.hour}:${_curfewEnd.minute}',
+    'topUpHistory': _topUpHistory.map((entry) {
+      return <String, dynamic>{
+        'amount': entry['amount'],
+        'timestamp': (entry['timestamp'] as DateTime).toIso8601String(),
+        'transactionId': entry['transactionId'],
+      };
+    }).toList(),
+    'childAge': _childAge,
+    'requiredQuizScore': _requiredQuizScore,
+    'numQuestionsPerQuiz': _numQuestionsPerQuiz,
   };
+
+  // Save account data to SharedPreferences
+  Future<void> saveToPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonData = jsonEncode(toJson());
+    await prefs.setString('account_manager_data', jsonData);
+  }
+
+  // Load account data from SharedPreferences
+  static Future<AccountManager?> loadFromPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('account_manager_data');
+    
+    if (jsonString == null) return null;
+
+    try {
+      final Map<String, dynamic> data = jsonDecode(jsonString);
+      return AccountManager._fromJson(data);
+    } catch (e) {
+      debugPrint('Error loading account data: $e');
+      return null;
+    }
+  }
+
+  // Private constructor for deserialization
+  AccountManager._fromJson(Map<String, dynamic> json)
+      : _userId = json['userId'],
+        _username = json['username'],
+        _password = json['password'] ?? '1234',
+        _userLevel = json['userLevel'] ?? 1,
+        _balance = BalanceManager.fromJson(json['balance'] ?? {}),
+        _history = List<String>.from(json['history'] ?? []),
+        _questionsAnswered = json['questionsAnswered'] ?? 0,
+        _tokensEarned = json['tokensEarned'] ?? 0,
+        _childAge = json['childAge'] ?? 8,
+        _requiredQuizScore = json['requiredQuizScore'] ?? 70,
+        _numQuestionsPerQuiz = json['numQuestionsPerQuiz'] ?? 5 {
+    
+    // Load curfew times
+    if (json['curfewStart'] != null) {
+      final parts = json['curfewStart'].toString().split(':');
+      _curfewStart = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }
+    if (json['curfewEnd'] != null) {
+      final parts = json['curfewEnd'].toString().split(':');
+      _curfewEnd = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }
+
+    // Load streak history
+    if (json['streakHistory'] != null) {
+      final Map<String, dynamic> streakData = json['streakHistory'];
+      streakData.forEach((key, value) {
+        _streakHistory[DateTime.parse(key)] = List<String>.from(value);
+      });
+    }
+
+    // Load top-up history
+    if (json['topUpHistory'] != null) {
+      final List<dynamic> historyList = json['topUpHistory'];
+      for (var entry in historyList) {
+        _topUpHistory.add(<String, dynamic>{
+          'amount': entry['amount'],
+          'timestamp': DateTime.parse(entry['timestamp']),
+          'transactionId': entry['transactionId'],
+        });
+      }
+    }
+  }
 }

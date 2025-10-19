@@ -29,19 +29,28 @@ Future<void> main() async {
     }
   }
 
-  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
+  // Try to load existing account data from preferences
+  AccountManager? accountManager = await AccountManager.loadFromPreferences();
 
-  accountManager.purchaseTokens(50);
+  // If no saved data exists, create a new account with demo data
+  if (accountManager == null) {
+    accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
 
-  final year = DateTime.now().year;
-  const month = 10; // October
+    accountManager.purchaseTokens(50);
 
-  final List<int> demoDays = [15, 14, 13, 11, 10, 8, 7, 5, 4, 3, 2, 1];
-  for (final day in demoDays) {
-    final date = DateTime(year, month, day);
+    final year = DateTime.now().year;
+    const month = 10; // October
 
-    accountManager.logEvent('Completed quiz on $month/$day');
-    accountManager.addStreakEvent(date, 'Completed quiz');
+    final List<int> demoDays = [15, 14, 13, 11, 10, 8, 7, 5, 4, 3, 2, 1];
+    for (final day in demoDays) {
+      final date = DateTime(year, month, day);
+
+      accountManager.logEvent('Completed quiz on $month/$day');
+      accountManager.addStreakEvent(date, 'Completed quiz');
+    }
+
+    // Save the initial demo data
+    await accountManager.saveToPreferences();
   }
 
   runApp(MathKidsApp(accountManager: accountManager));

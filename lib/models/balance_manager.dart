@@ -7,6 +7,9 @@ class BalanceManager {
   // Keeps track of token top-up history with timestamps for expiry.
   final List<TopUpEntry> _topUpEntries = [];
 
+  // Default constructor
+  BalanceManager();
+
   int get tokenBalance => _tokenBalance;
   int get unearnedBalance => _unearnedBalance;
   int get weeklyAllowance => _weeklyAllowance;
@@ -58,6 +61,25 @@ class BalanceManager {
         'maxEarnablePerDay': _maxEarnablePerDay,
         'topUpEntries': _topUpEntries.map((e) => e.toJson()).toList(),
       };
+
+  // Factory constructor for deserialization
+  factory BalanceManager.fromJson(Map<String, dynamic> json) {
+    final manager = BalanceManager();
+    manager._tokenBalance = json['tokenBalance'] ?? 0;
+    manager._unearnedBalance = json['unearnedBalance'] ?? 0;
+    manager._weeklyAllowance = json['weeklyAllowance'] ?? 0;
+    manager._maxEarnablePerDay = json['maxEarnablePerDay'] ?? 10;
+    
+    if (json['topUpEntries'] != null) {
+      manager._topUpEntries.addAll(
+        (json['topUpEntries'] as List)
+            .map((e) => TopUpEntry._fromJson(e))
+            .toList(),
+      );
+    }
+    
+    return manager;
+  }
 }
 
 class TopUpEntry {
@@ -70,4 +92,8 @@ class TopUpEntry {
         'amount': amount,
         'timestamp': timestamp.toIso8601String(),
       };
+
+  TopUpEntry._fromJson(Map<String, dynamic> json)
+      : amount = json['amount'] ?? 0,
+        timestamp = DateTime.parse(json['timestamp']);
 }
