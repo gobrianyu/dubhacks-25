@@ -1,9 +1,20 @@
+import 'package:dubhacks_25/views/streak_history.dart';
 import 'package:flutter/material.dart';
+import '../models/account_manager.dart';
 import 'quiz_page.dart';
 import 'parental_controls_page.dart';
 import 'help_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  final AccountManager accountManager;
+
+  const HomePage({Key? key, required this.accountManager}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final nostalgicColors = const {
     'sky': Color(0xFFA9E4FC),
     'sun': Color(0xFFFFE082),
@@ -11,9 +22,18 @@ class HomePage extends StatelessWidget {
     'berry': Color(0xFFF48FB1),
     'cloud': Color(0xFFFFFFFF),
   };
+  late Map<DateTime, List<String>> streaks = widget.accountManager.streakHistory;
+  final DateTime now = DateTime.now();
 
-  // Example user activity for streak: true = quiz completed that day
-  final List<bool> _weekActivity = [true, true, false, true, true, true, false];
+  // Find Monday of the current week
+  late DateTime monday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
+
+  // Generate activity list from Monday to Sunday
+  late List<bool> _weekActivity = List.generate(7, (index) {
+    final DateTime day = monday.add(Duration(days: index));
+    return streaks.containsKey(day) && streaks[day]!.isNotEmpty;
+  });
+
 
   int _calculateStreak(List<bool> activity) {
     int streak = 0;
@@ -27,32 +47,44 @@ class HomePage extends StatelessWidget {
     return streak;
   }
 
+  Future<void> _navigateTo(Widget page) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+    setState(() {}); // Refresh UI after returning
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentStreak = _calculateStreak(_weekActivity);
+    final balance = widget.accountManager.balance;
 
     return Scaffold(
       backgroundColor: nostalgicColors['sky'],
       appBar: AppBar(
-        title: const Text(
-          'Math Kids',
-          style: TextStyle(
-            fontFamily: 'ComicNeue',
-            fontWeight: FontWeight.bold,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          child: ClipOval(
+            child: Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.cover,
+              width: 40,
+              height: 40,
+            ),
           ),
         ),
+        title: const Text('Math Kids'),
         backgroundColor: nostalgicColors['sun'],
-        elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('assets/images/background.png')),
+        ),
+        padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 10),
-
-            // Welcome back and user info container
+            // ... Your existing widgets ...
             Container(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               decoration: BoxDecoration(
@@ -66,44 +98,51 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
-                children: const [
+                child: Column(
+                children: [
                   Text(
-                    'Welcome back, Math Hero!',
-                    style: TextStyle(
+                    'Welcome back, ${widget.accountManager.username}!',
+                    style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'ComicNeue'),
                   ),
+                  const SizedBox(height: 8),
+                  Text('Questions answered: ${widget.accountManager.questionsAnswered}'),
                 ],
               ),
             ),
 
+
             const SizedBox(height: 20),
+
 
             // Tokens and User Level Row with improved card content layout
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+                children: [
                 _infoCard(
                   icon: Icons.monetization_on,
                   label: 'Tokens',
-                  value: '50',
+                  value: '${balance.tokenBalance}',
                   color: nostalgicColors['grass']!,
                 ),
                 _infoCard(
                   icon: Icons.star,
                   label: 'Level',
-                  value: '5',
+                  value: '${widget.accountManager.userLevel}',
                   color: nostalgicColors['berry']!,
                 ),
               ],
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 15),
 
-            // Calendar and streak tracker container
-            Container(
+            // Modify gesture handler to use _navigateTo:
+            GestureDetector(
+              onTap: () => _navigateTo(StreakHistoryPage(accountManager: widget.accountManager)),
+              child: /* your existing streak container */
+              Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -117,9 +156,9 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
+
               child: Column(
                 children: [
-                  // Weekday labels
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -134,35 +173,32 @@ class HomePage extends StatelessWidget {
                   // Activity dots
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: _weekActivity
-                        .map(
-                          (completed) => Container(
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: completed
-                                  ? nostalgicColors['grass']
-                                  : nostalgicColors['cloud'],
-                              border: Border.all(color: Colors.black26),
-                            ),
-                            child: completed
-                                ? const Icon(
-                                    Icons.check,
-                                    size: 18,
-                                    color: Colors.white,
-                                  )
-                                : null,
-                          ),
-                        )
-                        .toList(),
+                    children: _weekActivity.map(
+                      (completed) => Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: completed
+                              ? nostalgicColors['grass']
+                              : nostalgicColors['cloud'],
+                          border: !completed ? Border.all(color: Colors.black26) : null,
+                        ),
+                        child: completed
+                            ? Image.asset(
+                              './assets/images/logo.png',
+                              fit: BoxFit.contain,
+                            )
+                            : null,
+                      ),
+                    ).toList(),
                   ),
                   const SizedBox(height: 12),
-                  // Motivational text
                   Text(
                     currentStreak > 0
-                        ? "🔥 You're on a streak of $currentStreak days, keep it up!"
-                        : "Let's start your streak today!",
+                        ? "🔥 You're on a streak of $currentStreak days this week, keep it up! >>>"
+                        : "Let's continue your streak today! >>>",
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -174,75 +210,67 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 28),
+            ),
 
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildFunButton(
-                          context,
-                          label: '🎯 Start Quiz',
-                          color: nostalgicColors['grass']!,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => QuizPage()),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HelpPage()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: nostalgicColors['cloud'],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 6,
-                            side: const BorderSide(color: Colors.black12),
-                          ),
-                          child: const Text(
-                            '?',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  _buildFunButton(
-                    context,
-                    label: '🔒 Parental Controls',
-                    color: nostalgicColors['berry']!,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ParentalControlsPage()),
-                      );
-                    },
-                  ),
-                ],
+            const SizedBox(height: 28),
+            
+            // Buttons: replace Navigator.push with _navigateTo calls:
+            Row(
+              children: [
+              Expanded(
+                child: _buildFunButton(
+                context,
+                label: '🎯 Start Quiz',
+                color: nostalgicColors['grass']!,
+                onPressed: () {
+                  Navigator.push(
+                  context,
+                    MaterialPageRoute(
+                      builder: (context) => QuizPage(accountManager: widget.accountManager)),
+                  );
+                },
+                ),
               ),
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 60,
+                height: 60,
+                child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HelpPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: nostalgicColors['cloud'],
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 6,
+                  side: const BorderSide(color: Colors.black12),
+                ),
+                child: const Text(
+                  '?',
+                  style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  ),
+                ),
+                ),
+              ),
+              ],
+            ),
+
+            SizedBox(height: 15),
+
+            _buildFunButton(
+              context,
+              label: '🔒 Parental Controls',
+              color: nostalgicColors['berry']!,
+              onPressed: () => _navigateTo(ParentalControlsPage(accountManager: widget.accountManager)),
             ),
           ],
         ),

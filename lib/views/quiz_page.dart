@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import '../models/account_manager.dart';
 
 class QuizPage extends StatefulWidget {
+  final AccountManager accountManager;
+
+  QuizPage({Key? key, required this.accountManager}) : super(key: key);
+
   @override
   State<QuizPage> createState() => _QuizPageState();
 }
@@ -16,6 +21,7 @@ class _QuizPageState extends State<QuizPage> {
 
   final TextEditingController _answerController = TextEditingController();
   String feedbackText = '';
+  bool showFeedBackText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +99,14 @@ class _QuizPageState extends State<QuizPage> {
               color: nostalgicColors['grass']!,
               onPressed: () {
                 setState(() {
-                  if (_answerController.text.trim() == '2') {
+                  final correct = _answerController.text.trim() == '2';
+                  if (correct) {
                     feedbackText = '🌟 Great job! You got it right!';
+                    // award tokens and record
+                    widget.accountManager.recordQuestionResult(correct: true, reward: 5);
                   } else {
                     feedbackText = '💡 Not quite! Try again!';
+                    widget.accountManager.recordQuestionResult(correct: false, reward: 0);
                   }
                 });
               },
