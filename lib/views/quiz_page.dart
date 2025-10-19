@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/account_manager.dart';
-
-class Question {
-  final String text;
-  final String answer;
-  final String hint;
-
-  Question({required this.text, required this.answer, required this.hint});
-}
+import '../models/gemini.dart';
 
 class QuizPage extends StatefulWidget {
   final AccountManager accountManager;
@@ -35,20 +28,68 @@ class _QuizPageState extends State<QuizPage> {
   String feedbackText = '';
   final TextEditingController _answerController = TextEditingController();
   bool showSummary = false;
+  bool isLoadingQuestions = false;
 
-  late final List<Question> questions;
+  final geminiService = GeminiService();
+  List<Question> questions = [];
+
+  Future<void> _loadQuestions() async {
+    setState(() {
+      isLoadingQuestions = true;
+      questions = []; // Clear existing questions
+      currentQuestionIndex = 0;
+      triesLeft = 3;
+      hintUnlocked = false;
+      feedbackText = '';
+      showSummary = false;
+      _answerController.clear();
+    });
+
+    try {
+      final generatedQuestions = await geminiService.generateQuestions(
+        count: widget.accountManager.numQuestionsPerQuiz,
+        childAge: widget.accountManager.childAge,
+      );
+      setState(() {
+        questions = generatedQuestions;
+        if (questions.length != widget.accountManager.numQuestionsPerQuiz) {
+          // If we didn't get the exact number of questions requested, pad with fallback questions
+          questions.addAll(_generateFallbackQuestions(
+            widget.accountManager.numQuestionsPerQuiz - questions.length
+          ));
+        }
+        triesResults = List.generate(questions.length, (_) => []);
+        isLoadingQuestions = false;
+      });
+    } catch (e) {
+      setState(() {
+        questions = _generateFallbackQuestions(widget.accountManager.numQuestionsPerQuiz);
+        triesResults = List.generate(questions.length, (_) => []);
+        isLoadingQuestions = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    questions = [
-      Question(text: 'What is 2x + 5 = 9?', answer: '2', hint: 'Try subtracting 5 from both sides!'),
-      Question(text: 'What is 3x = 12?', answer: '4', hint: 'Divide both sides by 3.'),
-      Question(text: 'What is 10 - 7?', answer: '3', hint: 'It\'s a small number!'),
-      Question(text: 'What is 10 - 7?', answer: '3', hint: 'It\'s a small number!'),
-      Question(text: 'What is 10 - 7?', answer: '3', hint: 'It\'s a small number!')
-    ];
-    triesResults = List.generate(questions.length, (_) => []);
+    // Load questions immediately when the quiz page is opened
+    _loadQuestions();
+  }
+
+  List<Question> _generateFallbackQuestions(int count) {
+    final List<Question> questions = [];
+    for (int i = 0; i < count; i++) {
+      // Generate simple addition questions with increasing difficulty
+      final a = (i * 2) + 1;  // 1, 3, 5, 7, ...
+      final b = i + 2;        // 2, 3, 4, 5, ...
+      questions.add(Question(
+        text: 'What is $a + $b?',
+        answer: '${a + b}',
+        hint: 'Try counting up $b numbers starting from $a.',
+      ));
+    }
+    return questions;
   }
 
   @override
@@ -93,10 +134,23 @@ class _QuizPageState extends State<QuizPage> {
               style: TextStyle(fontFamily: 'ComicNeue', fontWeight: FontWeight.bold, fontSize: 20),
             ),
             const SizedBox(height: 12),
-            Text(
-              'There are ${widget.accountManager.numQuestionsPerQuiz} questions today!',
-              style: const TextStyle(fontFamily: 'ComicNeue', fontSize: 16),
-            ),
+            if (isLoadingQuestions)
+              Column(
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Preparing your personalized questions...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: 'ComicNeue', fontSize: 16),
+                  ),
+                ],
+              )
+            else
+              Text(
+                'There are ${widget.accountManager.numQuestionsPerQuiz} questions today!',
+                style: const TextStyle(fontFamily: 'ComicNeue', fontSize: 16),
+              ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -105,7 +159,9 @@ class _QuizPageState extends State<QuizPage> {
                   context,
                   label: '✨ Ready',
                   color: nostalgicColors['grass']!,
-                  onPressed: () => setState(() => quizStarted = true),
+                  onPressed: (isLoadingQuestions || questions.isEmpty)
+                    ? null
+                    : () => setState(() => quizStarted = true),
                 ),
                 _buildButton(
                   context,
@@ -386,7 +442,7 @@ class _QuizPageState extends State<QuizPage> {
               context,
               label: 'Return Home',
               color: nostalgicColors['sun']!,
-              onPressed: () {
+              onPressed: () async {
                 final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
                 widget.accountManager.addStreakEvent(today, 'Completed quiz');
                 setState(() {
@@ -397,8 +453,9 @@ class _QuizPageState extends State<QuizPage> {
                   hintUnlocked = false;
                   feedbackText = '';
                   _answerController.clear();
-                  triesResults = List.generate(questions.length, (_) => []);
                 });
+                // Load new questions immediately
+                await _loadQuestions();
               },
             ),
             if (feedbackText.contains('below required'))
@@ -406,7 +463,8 @@ class _QuizPageState extends State<QuizPage> {
                 context,
                 label: 'Retake Quiz',
                 color: nostalgicColors['berry']!,
-                onPressed: () {
+                onPressed: () async {
+                  await _loadQuestions(); // Generate new questions
                   setState(() {
                     quizStarted = true;
                     showSummary = false;
