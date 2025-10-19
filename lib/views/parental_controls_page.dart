@@ -23,10 +23,10 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () => _showPasswordPrompt());
+    Future.delayed(Duration.zero, () => _showPasswordPrompt(context));
   }
 
-  void _showPasswordPrompt() {
+  void _showPasswordPrompt(BuildContext scaffoldContext) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -60,9 +60,9 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                 setState(() => _authenticated = true);
                 Navigator.pop(context);
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Incorrect password.')),
-                );
+                ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                const SnackBar(content: Text('Incorrect password.')),
+              );
               }
             },
             child: const Text('Unlock'),

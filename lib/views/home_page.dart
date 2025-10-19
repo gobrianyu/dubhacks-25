@@ -254,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                   child: _buildButton(
                     context,
                     label: '🔒 Parental Controls',
-                    color: nostalgicColors['berry']!,
+                    color: nostalgicColors['cloud']!,
                     onPressed: () => _navigateTo(ParentalControlsPage(accountManager: widget.accountManager)),
                   ),
                 ),
@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: nostalgicColors['cloud'],
+                    backgroundColor: nostalgicColors['berry'],
                     shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                     ),

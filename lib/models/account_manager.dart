@@ -11,6 +11,7 @@ class AccountManager {
   int _questionsAnswered;
   int _tokensEarned;
   String _password;
+  int _numQuestions;
 
   final Map<DateTime, List<String>> _streakHistory = {};
 
@@ -56,7 +57,8 @@ class AccountManager {
         _balance = BalanceManager(),
         _history = [],
         _questionsAnswered = 0,
-        _tokensEarned = 0;
+        _tokensEarned = 0,
+        _numQuestions = 5;
 
   // ----- Getters -----
   String get userId => _userId;
@@ -67,6 +69,7 @@ class AccountManager {
   int get questionsAnswered => _questionsAnswered;
   List<String> get history => List.unmodifiable(_history);
   String get pw => _password;
+  int get numQuestions => _numQuestions;
 
   /// Returns streak history within last 2 months (from today)
   Map<DateTime, List<String>> get streakHistory {
@@ -83,6 +86,10 @@ class AccountManager {
   // ----- Setters -----
   set username(String name) {
     if (name.isNotEmpty) _username = name;
+  }
+
+  set questionAmount(int num) {
+    _numQuestions = num;
   }
 
   set newPassword(String pw) {

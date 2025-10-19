@@ -13,7 +13,7 @@ void main() {
   final year = DateTime.now().year;
   const month = 10; // October
 
-  final List<int> demoDays = [18, 17, 15, 14, 13, 11, 10, 8, 7, 5, 4, 3, 2, 1];
+  final List<int> demoDays = [15, 14, 13, 11, 10, 8, 7, 5, 4, 3, 2, 1];
   for (final day in demoDays) {
     final date = DateTime(year, month, day);
 
@@ -39,7 +39,7 @@ class MathKidsApp extends StatelessWidget {
     bool beforeEnd = now.hour < end.hour ||
         (now.hour == end.hour && now.minute <= end.minute);
 
-    // Handles overnight curfews like 9 PM to 7 AM
+    // Handles overnight curfews
     return start.hour > end.hour ? (afterStart || beforeEnd) : (afterStart && beforeEnd);
   }
 
