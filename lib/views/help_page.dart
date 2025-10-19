@@ -5,7 +5,7 @@ class HelpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nostalgicColors = const {
+    const nostalgicColors = {
       'sky': Color(0xFFB4E9FF),
       'sun': Color(0xFFFFE082),
       'cloud': Color(0xFFFFFFFF),
@@ -38,7 +38,7 @@ class HelpPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: nostalgicColors['cloud'],
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 6,
@@ -47,9 +47,9 @@ class HelpPage extends StatelessWidget {
                   ],
                 ),
                 padding: const EdgeInsets.all(20),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'How Math Kids Works',
                       style: TextStyle(
@@ -72,7 +72,7 @@ class HelpPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: nostalgicColors['grass'],
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 6,
@@ -81,9 +81,9 @@ class HelpPage extends StatelessWidget {
                   ],
                 ),
                 padding: const EdgeInsets.all(20),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Quiz Tips 🧠',
                       style: TextStyle(

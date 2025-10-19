@@ -1,18 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'views/home_page.dart';
 import 'views/go_to_sleep.dart';
 import 'models/account_manager.dart';
 
-void main() {
-  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero');
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
+
+  final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
+  if (publishableKey != null && publishableKey.isNotEmpty) {
+    Stripe.publishableKey = publishableKey;
+    await Stripe.instance.applySettings();
+  } else {
+    debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env');
+  }
+
+  // Hardcoded account for demo purposes
+  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
 
   accountManager.purchaseTokens(50);
-  accountManager.recordQuestionResult(correct: true, reward: 5);
 
   final year = DateTime.now().year;
-  final month = 10; // October
+  const month = 10; // October
 
-  final List<int> demoDays = [1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 15, 17, 18];
+  final List<int> demoDays = [15, 14, 13, 11, 10, 8, 7, 5, 4, 3, 2, 1];
   for (final day in demoDays) {
     final date = DateTime(year, month, day);
 
@@ -38,7 +51,7 @@ class MathKidsApp extends StatelessWidget {
     bool beforeEnd = now.hour < end.hour ||
         (now.hour == end.hour && now.minute <= end.minute);
 
-    // Handles overnight curfews like 9 PM to 7 AM
+    // Handles overnight curfews
     return start.hour > end.hour ? (afterStart || beforeEnd) : (afterStart && beforeEnd);
   }
 
@@ -48,7 +61,7 @@ class MathKidsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Math Kids',
       home: curfew
-          ? const GoToSleepPage()
+          ? GoToSleepPage(accountManager: accountManager)
           : HomePage(accountManager: accountManager),
       debugShowCheckedModeBanner: false,
     );

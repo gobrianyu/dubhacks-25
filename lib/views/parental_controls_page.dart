@@ -1,3 +1,5 @@
+import 'package:dubhacks_25/main.dart';
+import 'package:dubhacks_25/views/quiz_settings.dart';
 import 'package:flutter/material.dart';
 import '../models/account_manager.dart';
 import 'top_up.dart';
@@ -6,7 +8,7 @@ import 'curfew_settings.dart';
 class ParentalControlsPage extends StatefulWidget {
   final AccountManager accountManager;
 
-  const ParentalControlsPage({Key? key, required this.accountManager}) : super(key: key);
+  const ParentalControlsPage({super.key, required this.accountManager});
 
   @override
   State<ParentalControlsPage> createState() => _ParentalControlsPageState();
@@ -16,16 +18,16 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
   bool _authenticated = false;
   final TextEditingController _passwordController = TextEditingController();
 
-  final Color primaryTone = const Color(0xFF546E7A);
-  final Color accentTone = const Color(0xFF90CAF9);
+  final Color primaryTone = const Color.fromARGB(255, 78, 101, 112);
+  final Color accentTone = const Color.fromARGB(255, 104, 135, 151);
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () => _showPasswordPrompt());
+    Future.delayed(Duration.zero, () => _showPasswordPrompt(context));
   }
 
-  void _showPasswordPrompt() {
+  void _showPasswordPrompt(BuildContext scaffoldContext) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -50,19 +52,18 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pop(context);
             },
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
-              if (_passwordController.text == '1234') {
+              if (_passwordController.text == widget.accountManager.pw) {
                 setState(() => _authenticated = true);
                 Navigator.pop(context);
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Incorrect password.')),
-                );
+                ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                const SnackBar(content: Text('Incorrect password.')),
+              );
               }
             },
             child: const Text('Unlock'),
@@ -75,16 +76,26 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: primaryTone,
-        title: const Text('Parental Controls', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Parental Controls', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => MathKidsApp(accountManager: widget.accountManager)),
+              (Route<dynamic> route) => false,
+            );
+          },
+        ),
       ),
       body: !_authenticated
           ? const Center(
               child: Text(
-                '🔒 Access Restricted. Please authenticate to continue.',
+                '🔒 This section is password protected. Please authenticate to continue.',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -111,7 +122,7 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                     context,
                     title: '⏰ Set Time Limits',
                     subtitle: 'Define curfew times to ensure healthy screen habits.',
-                    color: Colors.orangeAccent,
+                    color: accentTone,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -119,6 +130,20 @@ class _ParentalControlsPageState extends State<ParentalControlsPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  _buildActionCard(
+                    context,
+                    title: '⚙️ Quiz Settings',
+                    subtitle: 'Set child age, quiz score, and questions per quiz.',
+                    color: accentTone,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => QuizSettingsPage(accountManager: widget.accountManager),
+                      ),
+                    ),
+                  ),
+
                 ],
               ),
             ),

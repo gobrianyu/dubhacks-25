@@ -6,7 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 class StreakHistoryPage extends StatefulWidget {
   final AccountManager? accountManager;
 
-  const StreakHistoryPage({Key? key, this.accountManager}) : super(key: key);
+  const StreakHistoryPage({super.key, this.accountManager});
 
   @override
   State<StreakHistoryPage> createState() => _StreakHistoryPageState();
@@ -80,16 +80,16 @@ class _StreakHistoryPageState extends State<StreakHistoryPage> {
         elevation: 3,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.cover,
             image: AssetImage('assets/images/background.png')),
         ),
         child: Column(
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
               decoration: BoxDecoration(
                 color: nostalgicColors['grass'],
@@ -119,7 +119,7 @@ class _StreakHistoryPageState extends State<StreakHistoryPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Card(
-                  color: Color(0x99FFFFFF),
+                  color: const Color(0x99FFFFFF),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -184,24 +184,30 @@ class _StreakHistoryPageState extends State<StreakHistoryPage> {
                           calendarStyle: CalendarStyle(
                             defaultTextStyle: const TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'ComicNeue',
                             ),
-                            weekendTextStyle: const TextStyle(
-                              color: Colors.redAccent,
+                            weekendTextStyle: TextStyle(
+                              color: nostalgicColors['berry'],
                               fontWeight: FontWeight.bold,
                             ),
                             todayDecoration: BoxDecoration(
                               color: nostalgicColors['sun'],
                               shape: BoxShape.circle,
                             ),
-                            selectedDecoration: BoxDecoration(
-                              color: nostalgicColors['berry'],
-                              shape: BoxShape.circle,
+                            selectedDecoration: const BoxDecoration(
+                              color: Colors.transparent
                             ),
                             markerDecoration: BoxDecoration(
                               color: nostalgicColors['grass'],
                               shape: BoxShape.circle,
                             ),
+                            todayTextStyle: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w900
+                            ),
+                            selectedTextStyle: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600
+                            ), 
                           ),
                           calendarBuilders: CalendarBuilders(
                             markerBuilder: (context, day, events) {
@@ -239,9 +245,9 @@ class _StreakHistoryPageState extends State<StreakHistoryPage> {
                   ),
                 ],
                 color: nostalgicColors['cloud'],
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
               ),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -283,7 +289,7 @@ class _StreakHistoryPageState extends State<StreakHistoryPage> {
                                     color: nostalgicColors['grass']),
                                 title: Text(
                                   item,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.w600
                                   )
                                 ),
