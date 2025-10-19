@@ -1,6 +1,14 @@
 # Brain-Bloom
 Authors: Brian, Sydney, Tian, Aaron
 
+## Mobile App (Figma Demo):
+• Prototype: 
+https://www.figma.com/proto/ynm5qr0RCP3NLRiIwWDaO8/DubsHack-2025?page-id=0%3A1&node-id=2-83&p=f&viewport=798%2C430%2C1.29&t=5bSOGzpabz1hhTjw-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2%3A83
+• WireFrame Layout:
+https://www.figma.com/design/ynm5qr0RCP3NLRiIwWDaO8/DubsHack-2025?node-id=0-1&t=G6PbJpgluB0yKi14-1
+• Brainstorm/Sketches:
+https://www.figma.com/board/njmMfpYnDrf7eSzFSNX0ry/DubHacks2025?node-id=0-1&t=qRUoyMV7rDaG79QB-1
+
 ## Inspiration
 The inspiration for this project came from the agency that allowances gave us as kids, allowing us to grow in our work discipline while building skills in saving up money for the things we cared about.
 ## What it does
