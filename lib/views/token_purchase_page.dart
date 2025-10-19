@@ -3,8 +3,11 @@ import '../services/payment_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
 
+import '../models/account_manager.dart';
+
 class TokenPurchasePage extends StatefulWidget {
-  const TokenPurchasePage({super.key});
+  final AccountManager? accountManager;
+  const TokenPurchasePage({super.key, this.accountManager});
 
   @override
   State<TokenPurchasePage> createState() => _TokenPurchasePageState();
@@ -27,8 +30,14 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
       if (success == '1' && tokensStr != null) {
         final tokens = int.tryParse(tokensStr);
         if (tokens != null && tokens > 0) {
-          // Inform caller and clean up URL to avoid duplicate handling on refresh
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            // Credit tokens directly if accountManager is provided
+            if (widget.accountManager != null) {
+              widget.accountManager!.purchaseTokens(tokens);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Added $tokens tokens!')),
+              );
+            }
             Navigator.of(context).pop(tokens);
             _removeQueryParams();
           });
@@ -51,17 +60,18 @@ class _TokenPurchasePageState extends State<TokenPurchasePage> {
     });
 
     try {
-      await _payment.pay(tokenCount: _tokensToBuy);
-
-      // On web, Stripe.js will redirect the page – don't show success here.
-  if (kIsWeb) return;
-
-      // Mobile: Payment successful!
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Payment successful! You bought $_tokensToBuy tokens.')),
-      );
-      Navigator.of(context).pop(_tokensToBuy);
+      final success = await _payment.pay(tokenCount: _tokensToBuy);
+      if (success) {
+        widget.accountManager?.purchaseTokens(_tokensToBuy);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Payment successful! You bought $_tokensToBuy tokens.')),
+        );
+        Navigator.of(context).pop(_tokensToBuy);
+      } else {
+        setState(() {
+          _errorMessage = 'Payment failed. Please try again.';
+        });
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'An error occurred: $e';

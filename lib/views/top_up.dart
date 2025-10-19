@@ -54,7 +54,7 @@ class _TopUpPageState extends State<TopUpPage> {
                 onPressed: () async {
                   final tokensBought = await Navigator.push<int>(
                     context,
-                    MaterialPageRoute(builder: (_) => const TokenPurchasePage()),
+                    MaterialPageRoute(builder: (_) => TokenPurchasePage(accountManager: widget.accountManager)),
                   );
 
                   if (tokensBought != null && tokensBought > 0) {

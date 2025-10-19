@@ -8,7 +8,7 @@ import 'payment_service_base.dart';
 
 class MobilePaymentService implements PaymentService {
   @override
-  Future<void> pay({required int tokenCount}) async {
+  Future<bool> pay({required int tokenCount}) async {
     final backendBase = dotenv.env['BACKEND_BASE_URL'] ?? 'http://10.0.2.2:8080';
     final url = Uri.parse('$backendBase/create-payment-intent');
 
@@ -19,13 +19,13 @@ class MobilePaymentService implements PaymentService {
     );
 
     if (resp.statusCode != 200) {
-      throw Exception('Failed to create PaymentIntent: ${resp.statusCode} ${resp.body}');
+      return false;
     }
 
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
     final clientSecret = data['clientSecret'] as String?;
     if (clientSecret == null) {
-      throw Exception('clientSecret missing from backend response');
+      return false;
     }
 
     await Stripe.instance.initPaymentSheet(
@@ -35,7 +35,12 @@ class MobilePaymentService implements PaymentService {
       ),
     );
 
-    await Stripe.instance.presentPaymentSheet();
+    try {
+      await Stripe.instance.presentPaymentSheet();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
 
