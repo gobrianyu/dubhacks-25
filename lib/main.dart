@@ -5,20 +5,8 @@ import 'views/home_page.dart';
 import 'views/go_to_sleep.dart';
 import 'models/account_manager.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
-
-  final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
-  if (publishableKey != null && publishableKey.isNotEmpty) {
-    Stripe.publishableKey = publishableKey;
-    await Stripe.instance.applySettings();
-  } else {
-    debugPrint('Warning: STRIPE_PUBLISHABLE_KEY not found in .env');
-  }
-
-  // Hardcoded account for demo purposes
-  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
+void main() {
+  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero');
 
   accountManager.purchaseTokens(50);
 
