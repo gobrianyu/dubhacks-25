@@ -6,7 +6,7 @@ import 'views/go_to_sleep.dart';
 import 'models/account_manager.dart';
 
 void main() {
-  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero');
+  final accountManager = AccountManager(userId: 'user_001', username: 'Math Hero', password: '1234');
 
   accountManager.purchaseTokens(50);
 
