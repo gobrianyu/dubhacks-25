@@ -1,27 +1,37 @@
-# Brain-Bloom
-Authors: Brian, Sydney, Tian, Aaron
+# DubHacks-25: Brain-Bloom
+## Overview
+Brain-Bloom is an innovative mobile app that reimagines how children earn and manage their allowances, turning everyday finances into an opportunity for learning and growth. At its core, Brain-Bloom is an allowance app that lets parents set up a digital allowance system for their kids. These can be earned through completing math challenges tailored to their skill level. Parents have full control over the difficulty and frequency of the tasks, as well as additional features through an extensive parental controls implementation.  
 
-## Mobile App (Figma Demo):
-• Prototype: 
-https://www.figma.com/proto/ynm5qr0RCP3NLRiIwWDaO8/DubsHack-2025?page-id=0%3A1&node-id=2-83&p=f&viewport=798%2C430%2C1.29&t=5bSOGzpabz1hhTjw-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2%3A83
+This app is developed in Flutter and Dart, tested for Android, and compilable in iOS, Windows, and as a web app. Brain-Bloom is developed by Brian Yu, Sydney Vo, Tian-Jiao Song, Aaron Quashnock for DubHacks 2025.
 
-• WireFrame Layout:
-https://www.figma.com/design/ynm5qr0RCP3NLRiIwWDaO8/DubsHack-2025?node-id=0-1&t=G6PbJpgluB0yKi14-1
+Title Track: Grow (Advocate)
+Side Tracks: MLH Best Use of Gemini API, VISA
 
-• Brainstorm/Sketches:
-https://www.figma.com/board/njmMfpYnDrf7eSzFSNX0ry/DubHacks2025?node-id=0-1&t=qRUoyMV7rDaG79QB-1
+## How It Works
+### Setup
+No packages or releases are available currently. Interested parties may fork a copy of this repository or download locally. Ensure all relevant Flutter development tools are installed (see guide [here](https://docs.flutter.dev/get-started)).
+1. Open this repository in an IDE and navigate to `/server/stripe-backend/` in the terminal.
+2. In the terminal, start the backend server with `run bin/server.dart/`.
+3. Navigate to `/lib/main.dart` from the root and either run `main.dart` or enter `flutter build x` in the terminal (replace x with your desired build endpoint).
+To build as an `.apk` on your Android device, ensure that your device is connected to your environment and that USB Debugging is enabled under Developer Settings.
 
-## Inspiration
-The inspiration for this project came from the agency that allowances gave us as kids, allowing us to grow in our work discipline while building skills in saving up money for the things we cared about.
-## What it does
-Brain-bloom serves as a digital allowance system that encourages young children to grow their math skills to gain their allowance for the week. Parents can purchase in-app tokens that are awarded to kids upon the completion of a chosen number of AI generated math problems per day. The difficulty and amount of questions can be selected by parents, along with the amount of tokens awarded.
-## How we built it
-We built the application using Flutter as the frontend and Dart as the backend. We implemented Stripe's payment intent API to accept card payment for purchasing tokens, along with Gemini's AI API to generate math questions to solve. Finally, we used Figma to wireframe and prototype the app.
-## Challenges we ran into
-We ran into some issues with Stripe's API requiring access to certain mobile OS functionalities when many of us used a web emulator to develop. To overcome this challenge, we developed a parallel workflow for Stripe JS that allowed us to use both mobile and web versions of the application. 
-## Accomplishments that we're proud of
-We are most proud of the quick turn-around time for the project given its complexity. We are also proud of the work we did with unfamiliar technologies and how they helped us develop our flexibility as software engineers.
-## What we learned
-This was the first hackathon for half of our members, and so we learned about quick ideation and implementation of innovative ideas. Additionally, many of us did not have experience with Flutter before, and so this project served as a first introduction to the framework. Finally, this was our first experience implementing payment into an application before and so we learned about the basics of accepting payment from a user.
-## What's next for Math Kids
-While we were unable to implement it in our project today, we look to allow kids to utilize their tokens to  save up towards their goals and have funds transferred to a prepaid card for purchases.
+### Features
+- Home screen: Displays user's level and redeemable balance and allows users to navigate to all other features of the app.
+- Parental controls: Parental controls are locked behind a password manager. Controls include setting quiz parameters (difficulty, length), monetary controls (topping up, daily limits), and setting curfews.
+- Top-up: Parents can load allowances into the app for the user and view a transactions history. Credit/Debit top-up implementation is managed via a Stripe API. Refer to Stripe documentation for further details. Use a Stripe test card in sandbox environments.
+- Curfews: Parents can set curfew start and end times to discourage children from accessing the app past bedtime.
+- Streaks: History of the child's daily progress is saved and can be viewed.
+- Quiz: Daily math quizzes tailored to the child's age and skill level are generated at random. Quiz questions are generated and marked for correctness by Gemini. Upon completion, if the user scores above a threshold score set by parents, they may earn a portion of the week's/month's allowance for the day.
+
+## Reporting Bugs
+To report a bug, navigate to the GitHub Issues page, create a new issue, and include:
+- Description of the bug
+- Steps to reproduce the issue
+- Expected vs. actual behaviour
+- Screenshots (if applicable)
+- System environment details
+Please note that this app was developed as a rough sketch/proof-of-concept for hackathon submission. This is not a shippable product.
+
+### Further Readings
+- [Frontend README](https://github.com/gobrianyu/dubhacks-25/blob/main/lib/README.md): Frontend developer guidelines and project structure can be found here.
+- [Backend README](https://github.com/gobrianyu/dubhacks-25/blob/main/server/stripe_backend/README.md): Developer guidelines for server setup can be found here.
