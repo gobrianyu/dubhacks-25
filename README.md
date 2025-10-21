@@ -7,7 +7,19 @@ This app is developed in Flutter and Dart, tested for Android, and compilable in
 Title Track: Grow (Advocate)
 Side Tracks: MLH Best Use of Gemini API, VISA
 
+## Gallery
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/32eb5d99-7e8d-43ef-bb0d-d81f78aaf783" width="100">
+  <img src="https://github.com/user-attachments/assets/eed514b4-7dca-4a30-9d59-2a16b4ef05e6" width="100">
+  <img src="https://github.com/user-attachments/assets/893943cd-0c13-490f-8752-6e2306908de6" width="100">
+  <img src="https://github.com/user-attachments/assets/4e69bc56-ade0-4170-89d2-5e6f9af7434b" width="100">
+  <img src="https://github.com/user-attachments/assets/28347f32-1ac7-452a-a222-ce857fe46d62" width="100">
+  <img src="https://github.com/user-attachments/assets/7fcfdd41-cf1d-4a3a-aec4-0e7f8b702160" width="100">
+  <img src="https://github.com/user-attachments/assets/c0a7d54a-8879-466f-b49c-46663a3741d7" width="100">
+</p>
+
 ## How It Works
+
 ### Setup
 No packages or releases are available currently. Interested parties may fork a copy of this repository or download locally. Ensure all relevant Flutter development tools are installed (see guide [here](https://docs.flutter.dev/get-started)).
 1. Open this repository in an IDE and navigate to `/server/stripe-backend/` in the terminal.
