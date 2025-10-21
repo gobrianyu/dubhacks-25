@@ -7,7 +7,7 @@ This app is developed in Flutter and Dart, tested for Android, and compilable in
 Title Track: Grow (Advocate)
 Side Tracks: MLH Best Use of Gemini API, VISA
 
-## Gallery
+###Gallery
 <p float="left">
   <img src="https://github.com/user-attachments/assets/32eb5d99-7e8d-43ef-bb0d-d81f78aaf783" width="100">
   <img src="https://github.com/user-attachments/assets/eed514b4-7dca-4a30-9d59-2a16b4ef05e6" width="100">
