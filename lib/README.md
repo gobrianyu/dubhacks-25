@@ -36,8 +36,8 @@ Before beginning, ensure you have the most recent [Flutter](https://docs.flutter
 ```
 lib/
 ├── models/                    # Custom class objects
-│  ├── account_manager.dart           #
-│  ├── balance_maanger.dart           #
+│  ├── account_manager.dart           # Account manager class
+│  ├── balance_maanger.dart           # User balance manager class
 ├── views/                     # Custom flutter screens
 │  ├── curfew_settings.dart           # Curfew settings screen component
 │  ├── go_to_sleep.dart               # Curfew lock screen component
